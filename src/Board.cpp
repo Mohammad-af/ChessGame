@@ -25,7 +25,11 @@ void Board::Setup()
                 else if (col == 3)
                     Grid[row][col] = make_unique<Queen>(Piece::Color::BLACK);
                 else
+                {
                     Grid[row][col] = make_unique<King>(Piece::Color::BLACK);
+                    BlackKingRow = row;
+                    BlackKingCol = col;
+                }
             }
             else
             {
@@ -38,7 +42,11 @@ void Board::Setup()
                 else if (col == 3)
                     Grid[row][col] = make_unique<Queen>(Piece::Color::WHITE);
                 else
+                {
                     Grid[row][col] = make_unique<King>(Piece::Color::WHITE);
+                    WhiteKingRow = row;
+                    WhiteKingCol = col;
+                }
             }
         }
     }
@@ -58,4 +66,20 @@ bool Board::MovePiece(int row1, int row2, int col1, int col2)
     Grid[row2][col2] = move(Grid[row1][col1]);
     cout << "Successful move.\n";
     return true;
+}
+
+int Board::GetKingRow(Piece::Color color) const
+{
+    if (color == Piece::Color::WHITE)
+        return WhiteKingRow;
+    else
+        return BlackKingRow;
+}
+
+int Board::GetKingCol(Piece::Color color) const
+{
+    if (color == Piece::Color::WHITE)
+        return WhiteKingCol;
+    else
+        return BlackKingCol;
 }

@@ -12,10 +12,18 @@ private:
     static int Turn;
 
 public:
+    enum class GameStatus
+    {
+        Play,
+        Check,
+        Checkmate,
+        Stalemate
+    };
     std::string UserInput() const;
     bool ValidateMove(const std::string &);
     void GameState();
-    bool IsCheck() const;
+    bool IsSquareAttacked(int, int, Piece::Color) const;
+    Piece::Color TurnColor() const;
     void Setup();
     void Draw() const;
 };

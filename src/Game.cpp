@@ -9,13 +9,13 @@ string Game::UserInput() const
     string user_move;
     do
     {
-        if (Turn % 2 == 1)
+        if (TurnColor() == Piece::Color::WHITE)
             cout << "\nWhite move: ";
         else
             cout << "\nBlack move: ";
         cin >> user_move;
         if (user_move.length() != 4)
-            cout << "Invalid INPUT FORMAT! Use this format: a2a3\n";
+            cout << "INVALID INPUT FORMAT! Use this format: a2a3\n";
     } while (user_move.length() != 4);
     return user_move;
 }
@@ -43,7 +43,7 @@ bool Game::ValidateMove(const string &user_move)
         cout << "INVALID MOVE! The starting point has no pieces in it.\n";
         return false;
     }
-    if ((board.GetPiece(row1, col1)->GetColor() != Piece::Color::WHITE && Turn % 2 == 1) || (board.GetPiece(row1, col1)->GetColor() != Piece::Color::BLACK && Turn % 2 == 0))
+    if (board.GetPiece(row1, col1)->GetColor() != TurnColor())
     {
         cout << "INVALID MOVE! You cannot move the opponent's piece.\n";
         return false;
@@ -66,11 +66,21 @@ bool Game::ValidateMove(const string &user_move)
 
 void Game::GameState()
 {
+    bool check = IsSquareAttacked(board.GetKingRow(TurnColor()), board.GetKingCol(TurnColor()), TurnColor());
 }
 
-bool Game::IsCheck() const
+bool Game::IsSquareAttacked(int row, int col, Piece::Color turn_color) const
 {
+
     return false;
+}
+
+Piece::Color Game::TurnColor() const
+{
+    if (Turn % 2 == 1)
+        return Piece::Color::WHITE;
+    else
+        return Piece::Color::BLACK;
 }
 
 void Game::Setup() { board.Setup(); }
