@@ -11,3 +11,5 @@ bool Bishop::IsValidMove(int row1, int row2, int col1, int col2) const
 }
 
 char Bishop::GetSymbol() const { return 'B'; }
+
+Piece::PieceType Bishop::GetType() const { return PieceType::Bishop; }

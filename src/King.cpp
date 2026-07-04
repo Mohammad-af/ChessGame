@@ -11,3 +11,5 @@ bool King::IsValidMove(int row1, int row2, int col1, int col2) const
 }
 
 char King::GetSymbol() const { return 'K'; }
+
+Piece::PieceType King::GetType() const { return PieceType::King; }

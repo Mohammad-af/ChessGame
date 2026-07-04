@@ -11,3 +11,5 @@ bool Knight::IsValidMove(int row1, int row2, int col1, int col2) const
 }
 
 char Knight::GetSymbol() const { return 'N'; }
+
+Piece::PieceType Knight::GetType() const { return PieceType::Knight; }

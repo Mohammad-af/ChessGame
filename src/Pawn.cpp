@@ -11,3 +11,5 @@ bool Pawn::IsValidMove(int row1, int row2, int col1, int col2) const
 }
 
 char Pawn::GetSymbol() const { return 'P'; }
+
+Piece::PieceType Pawn::GetType() const { return PieceType::Pawn; }

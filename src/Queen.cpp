@@ -13,3 +13,5 @@ bool Queen::IsValidMove(int row1, int row2, int col1, int col2) const
 }
 
 char Queen::GetSymbol() const { return 'Q'; }
+
+Piece::PieceType Queen::GetType() const { return PieceType::Queen; }

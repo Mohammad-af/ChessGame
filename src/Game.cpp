@@ -9,7 +9,7 @@ string Game::UserInput() const
     string user_move;
     do
     {
-        if (TurnColor() == Piece::Color::WHITE)
+        if (TurnColor() == Piece::Color::White)
             cout << "\nWhite move: ";
         else
             cout << "\nBlack move: ";
@@ -35,7 +35,7 @@ bool Game::ValidateMove(const string &user_move)
     row2 = 7 - (user_move[3] - '1');
     if (row1 < 0 || row1 >= 8 || row2 < 0 || row2 >= 8 || col1 < 0 || col1 >= 8 || col2 < 0 || col2 >= 8)
     {
-        cout << "INVALID MOVE!\n";
+        cout << "INVALID MOVE! Enter coloumn a-h and row 1-8.\n";
         return false;
     }
     if (board.GetPiece(row1, col1) == nullptr)
@@ -56,7 +56,12 @@ bool Game::ValidateMove(const string &user_move)
     Piece *piece = board.GetPiece(row1, col1);
     if (!(piece->IsValidMove(row1, row2, col1, col2)))
     {
-        cout << "THIS MOVE IS NOT ALLOWED!\n";
+        cout << "INVALID MOVE! This piece cannot move like this.\n";
+        return false;
+    }
+    if (!(board.IsPathClear(row1, row2, col1, col2, piece)))
+    {
+        cout << "INVALID MOVE! The path is not clear.\n";
         return false;
     }
     board.MovePiece(row1, row2, col1, col2);
@@ -71,16 +76,15 @@ void Game::GameState()
 
 bool Game::IsSquareAttacked(int row, int col, Piece::Color turn_color) const
 {
-
     return false;
 }
 
 Piece::Color Game::TurnColor() const
 {
     if (Turn % 2 == 1)
-        return Piece::Color::WHITE;
+        return Piece::Color::White;
     else
-        return Piece::Color::BLACK;
+        return Piece::Color::Black;
 }
 
 void Game::Setup() { board.Setup(); }
