@@ -2,6 +2,7 @@
 #include <iostream>
 #include <iomanip>
 using namespace std;
+
 void Display::Draw(const Board &board)
 {
     cout << left << setw(5) << "r\\c" << setw(5) << "a" << setw(5) << "b" << setw(5) << "c"
@@ -13,9 +14,9 @@ void Display::Draw(const Board &board)
         cout << left << 8 - row << "  | ";
         for (int col = 0; col < 8; col++)
         {
-            Piece *p = board.GetPiece(row, col);
-            if (p != nullptr)
-                cout << p->GetSymbol() << setw(4) << static_cast<char>(p->GetColor());
+            Piece *piece = board.GetPiece(row, col);
+            if (piece != nullptr)
+                cout << piece->GetSymbol() << setw(4) << static_cast<char>(piece->GetColor());
             else
                 cout << setw(5) << ' ';
         }

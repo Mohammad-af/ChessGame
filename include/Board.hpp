@@ -2,14 +2,15 @@
 #define BOARD_HPP
 
 #include <memory>
-#include "../include/Piece.hpp"
-#include "../include/Pawn.hpp"
-#include "../include/Rook.hpp"
-#include "../include/Knight.hpp"
-#include "../include/Bishop.hpp"
-#include "../include/Queen.hpp"
-#include "../include/King.hpp"
-#include "../include/Game.hpp"
+#include <string>
+#include "Piece.hpp"
+#include "Pawn.hpp"
+#include "Rook.hpp"
+#include "Knight.hpp"
+#include "Bishop.hpp"
+#include "Queen.hpp"
+#include "King.hpp"
+
 class Board
 {
 private:
@@ -19,7 +20,7 @@ public:
     void Setup();
     Piece *GetPiece(int, int) const;
     bool IsEmpty(int, int) const;
-    bool MovePiece(char, int, char, int);
+    bool MovePiece(int, int, int, int);
 };
 
 #endif

@@ -2,6 +2,7 @@
 #define DISPLAY_HPP
 
 #include "Board.hpp"
+
 class Display
 {
 public:
