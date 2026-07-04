@@ -43,10 +43,20 @@ bool Game::ValidateMove(const string &user_move)
         cout << "INVALID MOVE! The starting point has no pieces in it.\n";
         return false;
     }
+    if ((board.GetPiece(row1, col1)->GetColor() != Piece::Color::WHITE && Turn % 2 == 1) || (board.GetPiece(row1, col1)->GetColor() != Piece::Color::BLACK && Turn % 2 == 0))
+    {
+        cout << "INVALID MOVE! You cannot move the opponent's piece.\n";
+        return false;
+    }
+    if (row1 == row2 && col1 == col2)
+    {
+        cout << "INVALID MOVE! You cannot move to the same place.\n";
+        return false;
+    }
     Piece *piece = board.GetPiece(row1, col1);
     if (!(piece->IsValidMove(row1, row2, col1, col2)))
     {
-        cout << "THIS MOVE IS NOT ALLOWED!";
+        cout << "THIS MOVE IS NOT ALLOWED!\n";
         return false;
     }
     board.MovePiece(row1, row2, col1, col2);
