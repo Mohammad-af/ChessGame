@@ -11,14 +11,6 @@ public:
         White = 'w',
         Black = 'b'
     };
-
-private:
-    Color PieceColor; // White = 0, Black = 1
-
-protected:
-    bool FirstMove = true;
-
-public:
     enum class PieceType
     {
         Pawn,
@@ -28,14 +20,20 @@ public:
         Queen,
         King
     };
+
+private:
+    Color pieceColor; // White = 0, Black = 1
+    bool firstMove = true;
+
+public:
     Piece(Color);
     virtual ~Piece() = default;
     virtual bool IsValidMove(int, int, int, int, Color) const = 0;
     virtual std::string GetSymbol() const = 0;
-    Color GetColor() const;
     virtual PieceType GetType() const = 0;
+    Color GetColor() const;
     bool IsFirstMove() const;
-    void MadeFisrtMove();
+    void MarkAsMoved();
 };
 
 #endif

@@ -27,8 +27,8 @@ void Board::Setup()
                 else
                 {
                     Grid[row][col] = std::make_unique<King>(Piece::Color::Black);
-                    BlackKingRow = row;
-                    BlackKingCol = col;
+                    blackKingRow = row;
+                    blackKingCol = col;
                 }
             }
             else
@@ -44,8 +44,8 @@ void Board::Setup()
                 else
                 {
                     Grid[row][col] = std::make_unique<King>(Piece::Color::White);
-                    WhiteKingRow = row;
-                    WhiteKingCol = col;
+                    whiteKingRow = row;
+                    whiteKingCol = col;
                 }
             }
         }
@@ -71,17 +71,17 @@ bool Board::MovePiece(int row1, int row2, int col1, int col2)
 int Board::GetKingRow(Piece::Color color) const
 {
     if (color == Piece::Color::White)
-        return WhiteKingRow;
+        return whiteKingRow;
     else
-        return BlackKingRow;
+        return blackKingRow;
 }
 
 int Board::GetKingCol(Piece::Color color) const
 {
     if (color == Piece::Color::White)
-        return WhiteKingCol;
+        return whiteKingCol;
     else
-        return BlackKingCol;
+        return blackKingCol;
 }
 
 bool Board::IsPathClear(int row1, int row2, int col1, int col2, Piece *piece)

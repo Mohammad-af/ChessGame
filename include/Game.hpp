@@ -7,10 +7,6 @@
 
 class Game
 {
-private:
-    Board board;
-    static int Turn;
-
 public:
     enum class GameStatus
     {
@@ -19,6 +15,12 @@ public:
         Checkmate,
         Stalemate
     };
+
+private:
+    Board board;
+    static int turn;
+
+public:
     std::string UserInput() const;
     bool ValidateMove(const std::string &);
     void GameState();

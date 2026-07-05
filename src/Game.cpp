@@ -1,7 +1,7 @@
 #include "Game.hpp"
 #include <iostream>
 
-int Game::Turn = 1;
+int Game::turn = 1;
 
 std::string Game::UserInput() const
 {
@@ -64,9 +64,9 @@ bool Game::ValidateMove(const std::string &user_move)
         return false;
     }
     if (piece->IsFirstMove())
-        piece->MadeFisrtMove();
+        piece->MarkAsMoved();
     board.MovePiece(row1, row2, col1, col2);
-    Turn++;
+    turn++;
     return true;
 }
 
@@ -82,7 +82,7 @@ bool Game::IsSquareAttacked(int row, int col, Piece::Color turn_color) const
 
 Piece::Color Game::TurnColor() const
 {
-    if (Turn % 2 == 1)
+    if (turn % 2 == 1)
         return Piece::Color::White;
     else
         return Piece::Color::Black;

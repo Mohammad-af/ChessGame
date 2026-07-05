@@ -15,10 +15,10 @@ class Board
 {
 private:
     std::unique_ptr<Piece> Grid[8][8];
-    int WhiteKingRow;
-    int WhiteKingCol;
-    int BlackKingRow;
-    int BlackKingCol;
+    int whiteKingRow;
+    int whiteKingCol;
+    int blackKingRow;
+    int blackKingCol;
 
 public:
     void Setup();
