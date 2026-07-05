@@ -48,13 +48,13 @@ Implemented features:
 - Piece movement validation
 - Console rendering
 - Unicode characters
+- Check detection
 
 ## Future Plans
 
 - Castling
 - En passant
 - Pawn promotion
-- Check detection
 - Checkmate detection
 - Stalemate detection
 - Save and load game

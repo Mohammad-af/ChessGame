@@ -8,10 +8,10 @@ std::string Game::UserInput() const
     std::string user_move;
     do
     {
-        if (TurnColor() == Piece::Color::White)
-            std::cout << "\nWhite move: ";
+        if (GetTurnColor() == Piece::Color::White)
+            std::cout << "White move: ";
         else
-            std::cout << "\nBlack move: ";
+            std::cout << "Black move: ";
         std::cin >> user_move;
         if (user_move.length() != 4)
             std::cout << "\nINVALID INPUT FORMAT! Use this format: a2a3\n\n";
@@ -42,7 +42,7 @@ bool Game::ValidateMove(const std::string &user_move)
         std::cout << "\nINVALID MOVE! The starting point has no pieces in it.\n\n";
         return false;
     }
-    if (board.GetPiece(row1, col1)->GetColor() != TurnColor())
+    if (board.GetPiece(row1, col1)->GetColor() != GetTurnColor())
     {
         std::cout << "\nINVALID MOVE! You cannot move the opponent's piece.\n\n";
         return false;
@@ -73,21 +73,28 @@ bool Game::ValidateMove(const std::string &user_move)
 Game::GameStatus Game::GameState()
 {
     Piece::Color opponent_color;
-    if (TurnColor() == Piece::Color::White)
+    if (GetTurnColor() == Piece::Color::White)
         opponent_color = Piece::Color::Black;
-    if (TurnColor() == Piece::Color::Black)
+    if (GetTurnColor() == Piece::Color::Black)
         opponent_color = Piece::Color::White;
-    if (board.IsSquareAttacked(board.GetKingRow(TurnColor()), board.GetKingCol(TurnColor()), opponent_color))
+    if (board.IsSquareAttacked(board.GetKingRow(GetTurnColor()), board.GetKingCol(GetTurnColor()), opponent_color))
         return GameStatus::Check;
     return GameStatus::Play;
 }
 
-Piece::Color Game::TurnColor() const
+Piece::Color Game::GetTurnColor() const
 {
     if (turn % 2 == 1)
         return Piece::Color::White;
     else
         return Piece::Color::Black;
+}
+
+std::string Game::GetColorTurnName() const
+{
+    if (GetTurnColor() == Piece::Color::White)
+        return "White";
+    return "Black";
 }
 
 void Game::Setup() { board.Setup(); }

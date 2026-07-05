@@ -64,7 +64,6 @@ bool Board::IsEmpty(int row, int col) const
 bool Board::MovePiece(int row1, int col1, int row2, int col2)
 {
     grid[row2][col2] = move(grid[row1][col1]);
-    std::cout << "\nSuccessful move.\n\n";
     return true;
 }
 
@@ -128,12 +127,7 @@ bool Board::IsSquareAttacked(int square_row, int square_col, Piece::Color attack
             if (piece != nullptr && piece->GetColor() == attacker_color)
             {
                 if ((piece->GetType() == Piece::PieceType::Pawn && piece->AttacksSquare(row, square_row, col, square_col)) || (piece->GetType() != Piece::PieceType::Pawn && piece->AttacksSquare(row, col, square_row, square_col) && IsPathClear(row, col, square_row, square_col, piece)))
-                {
-                    std::string color = (piece->GetColor() == Piece::Color::White) ? "Black" : "White";
-                    std::cout << "IT'S CHECK! " << color << " King is attacked by " << piece->GetSymbol() << std::endl
-                              << std::endl;
                     return true;
-                }
             }
         }
     }

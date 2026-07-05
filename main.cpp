@@ -17,7 +17,18 @@ int main()
         game.Draw();
         user_move = game.UserInput();
         if (game.ValidateMove(user_move))
-            game.GameState();
+        {
+            ClearConsole();
+            game.Draw();
+            switch (game.GameState())
+            {
+            case Game::GameStatus::Check:
+                std::cout << "IT'S CHECK! The " << game.GetColorTurnName() << " King is on check.\n";
+                break;
+            default:
+                break;
+            }
+        }
         PauseConsole();
     }
     return 0;
