@@ -53,16 +53,18 @@ bool Game::ValidateMove(const std::string &user_move)
         return false;
     }
     Piece *piece = board.GetPiece(row1, col1);
-    if (!(piece->IsValidMove(row1, row2, col1, col2)))
+    if (!(piece->IsValidMove(row1, row2, col1, col2, piece->GetColor())))
     {
         std::cout << "INVALID MOVE! This piece cannot move like this.\n";
         return false;
     }
     if (!(board.IsPathClear(row1, row2, col1, col2, piece)))
     {
-        std::cout << "INVALID MOVE! The path is not clear.\n";
+        std::cout << "INVALID MOVE! The path is not clear or you cannot move diagonally with pawn here.\n";
         return false;
     }
+    if (piece->IsFirstMove())
+        piece->MadeFisrtMove();
     board.MovePiece(row1, row2, col1, col2);
     Turn++;
     return true;

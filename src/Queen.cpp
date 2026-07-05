@@ -3,7 +3,7 @@
 
 Queen::Queen(Color color) : Piece(color) {}
 
-bool Queen::IsValidMove(int row1, int row2, int col1, int col2) const
+bool Queen::IsValidMove(int row1, int row2, int col1, int col2, Color color) const
 {
     if (abs(row1 - row2) == abs(col1 - col2))
         return true;

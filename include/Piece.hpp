@@ -15,6 +15,9 @@ public:
 private:
     Color PieceColor; // White = 0, Black = 1
 
+protected:
+    bool FirstMove = true;
+
 public:
     enum class PieceType
     {
@@ -27,10 +30,12 @@ public:
     };
     Piece(Color);
     virtual ~Piece() = default;
-    virtual bool IsValidMove(int, int, int, int) const = 0;
+    virtual bool IsValidMove(int, int, int, int, Color) const = 0;
     virtual std::string GetSymbol() const = 0;
     Color GetColor() const;
     virtual PieceType GetType() const = 0;
+    bool IsFirstMove() const;
+    void MadeFisrtMove();
 };
 
 #endif

@@ -7,7 +7,7 @@ class King : public Piece
 {
 public:
     King(Color);
-    virtual bool IsValidMove(int, int, int, int) const override;
+    virtual bool IsValidMove(int, int, int, int, Color) const override;
     virtual std::string GetSymbol() const override;
     virtual Piece::PieceType GetType() const override;
 };
