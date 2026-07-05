@@ -1,3 +1,19 @@
+# Build directory
 build/
+
+# CMake
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+compile_commands.json
+
+# Executables
 *.exe
+*.out
+
+# Object files
 *.o
+*.obj
+
+# Logs
+*.log
