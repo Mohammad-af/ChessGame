@@ -1,7 +1,7 @@
-#include "../include/Bishop.hpp"
+#include "Bishop.hpp"
 #include <cmath>
 
-Bishop::Bishop(Piece::Color color) : Piece(color) {}
+Bishop::Bishop(Color color) : Piece(color) {}
 
 bool Bishop::IsValidMove(int row1, int row2, int col1, int col2) const
 {
@@ -10,6 +10,12 @@ bool Bishop::IsValidMove(int row1, int row2, int col1, int col2) const
     return false;
 }
 
-char Bishop::GetSymbol() const { return 'B'; }
+std::string Bishop::GetSymbol() const
+{
+    if (GetColor() == Color::White)
+        return u8"♗";
+    else
+        return u8"♝";
+}
 
 Piece::PieceType Bishop::GetType() const { return PieceType::Bishop; }

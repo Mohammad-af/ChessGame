@@ -1,26 +1,25 @@
-#include "../include/Game.hpp"
+#include "Game.hpp"
 #include <iostream>
-using namespace std;
 
 int Game::Turn = 1;
 
-string Game::UserInput() const
+std::string Game::UserInput() const
 {
-    string user_move;
+    std::string user_move;
     do
     {
         if (TurnColor() == Piece::Color::White)
-            cout << "\nWhite move: ";
+            std::cout << "\nWhite move: ";
         else
-            cout << "\nBlack move: ";
-        cin >> user_move;
+            std::cout << "\nBlack move: ";
+        std::cin >> user_move;
         if (user_move.length() != 4)
-            cout << "INVALID INPUT FORMAT! Use this format: a2a3\n";
+            std::cout << "INVALID INPUT FORMAT! Use this format: a2a3\n";
     } while (user_move.length() != 4);
     return user_move;
 }
 
-bool Game::ValidateMove(const string &user_move)
+bool Game::ValidateMove(const std::string &user_move)
 {
     int col1, col2, row1, row2;
     if (user_move[0] >= 97)        // 'a' = 97 , 'b' = 98 , ...
@@ -35,33 +34,33 @@ bool Game::ValidateMove(const string &user_move)
     row2 = 7 - (user_move[3] - '1');
     if (row1 < 0 || row1 >= 8 || row2 < 0 || row2 >= 8 || col1 < 0 || col1 >= 8 || col2 < 0 || col2 >= 8)
     {
-        cout << "INVALID MOVE! Enter coloumn a-h and row 1-8.\n";
+        std::cout << "INVALID MOVE! Enter coloumn a-h and row 1-8.\n";
         return false;
     }
     if (board.GetPiece(row1, col1) == nullptr)
     {
-        cout << "INVALID MOVE! The starting point has no pieces in it.\n";
+        std::cout << "INVALID MOVE! The starting point has no pieces in it.\n";
         return false;
     }
     if (board.GetPiece(row1, col1)->GetColor() != TurnColor())
     {
-        cout << "INVALID MOVE! You cannot move the opponent's piece.\n";
+        std::cout << "INVALID MOVE! You cannot move the opponent's piece.\n";
         return false;
     }
     if (row1 == row2 && col1 == col2)
     {
-        cout << "INVALID MOVE! You cannot move to the same place.\n";
+        std::cout << "INVALID MOVE! You cannot move to the same place.\n";
         return false;
     }
     Piece *piece = board.GetPiece(row1, col1);
     if (!(piece->IsValidMove(row1, row2, col1, col2)))
     {
-        cout << "INVALID MOVE! This piece cannot move like this.\n";
+        std::cout << "INVALID MOVE! This piece cannot move like this.\n";
         return false;
     }
     if (!(board.IsPathClear(row1, row2, col1, col2, piece)))
     {
-        cout << "INVALID MOVE! The path is not clear.\n";
+        std::cout << "INVALID MOVE! The path is not clear.\n";
         return false;
     }
     board.MovePiece(row1, row2, col1, col2);

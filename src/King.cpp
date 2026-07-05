@@ -1,7 +1,7 @@
-#include "../include/King.hpp"
+#include "King.hpp"
 #include <cmath>
 
-King::King(Piece::Color color) : Piece(color) {}
+King::King(Color color) : Piece(color) {}
 
 bool King::IsValidMove(int row1, int row2, int col1, int col2) const
 {
@@ -10,6 +10,12 @@ bool King::IsValidMove(int row1, int row2, int col1, int col2) const
     return false;
 }
 
-char King::GetSymbol() const { return 'K'; }
+std::string King::GetSymbol() const
+{
+    if (GetColor() == Color::White)
+        return u8"♔";
+    else
+        return u8"♚";
+}
 
 Piece::PieceType King::GetType() const { return PieceType::King; }

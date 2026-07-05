@@ -8,7 +8,7 @@ class Rook : public Piece
 public:
     Rook(Piece::Color);
     virtual bool IsValidMove(int, int, int, int) const override;
-    virtual char GetSymbol() const override;
+    virtual std::string GetSymbol() const override;
     virtual Piece::PieceType GetType() const override;
 };
 

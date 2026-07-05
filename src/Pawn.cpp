@@ -1,4 +1,4 @@
-#include "../include/Pawn.hpp"
+#include "Pawn.hpp"
 #include <cmath>
 
 Pawn::Pawn(Color color) : Piece(color) {}
@@ -10,6 +10,12 @@ bool Pawn::IsValidMove(int row1, int row2, int col1, int col2) const
     return false;
 }
 
-char Pawn::GetSymbol() const { return 'P'; }
+std::string Pawn::GetSymbol() const
+{
+    if (GetColor() == Color::White)
+        return u8"♙";
+    else
+        return u8"♟";
+}
 
 Piece::PieceType Pawn::GetType() const { return PieceType::Pawn; }

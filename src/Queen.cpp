@@ -1,7 +1,7 @@
-#include "../include/Queen.hpp"
+#include "Queen.hpp"
 #include <cmath>
 
-Queen::Queen(Piece::Color color) : Piece(color) {}
+Queen::Queen(Color color) : Piece(color) {}
 
 bool Queen::IsValidMove(int row1, int row2, int col1, int col2) const
 {
@@ -12,6 +12,12 @@ bool Queen::IsValidMove(int row1, int row2, int col1, int col2) const
     return false;
 }
 
-char Queen::GetSymbol() const { return 'Q'; }
+std::string Queen::GetSymbol() const
+{
+    if (GetColor() == Color::White)
+        return u8"♕";
+    else
+        return u8"♛";
+}
 
 Piece::PieceType Queen::GetType() const { return PieceType::Queen; }

@@ -2,21 +2,23 @@
 #include <string>
 #include "include/Dispaly.hpp"
 #include "include/Game.hpp"
-using namespace std;
+#include "include/Console.hpp"
+
 int main()
 {
+    SetupConsole();
     bool run_game = true;
-    string user_move;
+    std::string user_move;
     Game game;
     game.Setup();
     while (run_game)
     {
-        system("cls");
+        ClearConsole();
         game.Draw();
         user_move = game.UserInput();
         if (game.ValidateMove(user_move))
             game.GameState();
-        system("pause");
+        PauseConsole();
     }
     return 0;
 }

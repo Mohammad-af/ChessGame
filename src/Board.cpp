@@ -1,6 +1,5 @@
-#include "../include/Board.hpp"
+#include "Board.hpp"
 #include <iostream>
-using namespace std;
 
 void Board::Setup()
 {
@@ -11,22 +10,22 @@ void Board::Setup()
             if (row > 1 && row < 6)
                 Grid[row][col] = nullptr;
             else if (row == 1)
-                Grid[row][col] = make_unique<Pawn>(Piece::Color::Black);
+                Grid[row][col] = std::make_unique<Pawn>(Piece::Color::Black);
             else if (row == 6)
-                Grid[row][col] = make_unique<Pawn>(Piece::Color::White);
+                Grid[row][col] = std::make_unique<Pawn>(Piece::Color::White);
             else if (row == 0)
             {
                 if (col == 0 || col == 7)
-                    Grid[row][col] = make_unique<Rook>(Piece::Color::Black);
+                    Grid[row][col] = std::make_unique<Rook>(Piece::Color::Black);
                 else if (col == 1 || col == 6)
-                    Grid[row][col] = make_unique<Knight>(Piece::Color::Black);
+                    Grid[row][col] = std::make_unique<Knight>(Piece::Color::Black);
                 else if (col == 2 || col == 5)
-                    Grid[row][col] = make_unique<Bishop>(Piece::Color::Black);
+                    Grid[row][col] = std::make_unique<Bishop>(Piece::Color::Black);
                 else if (col == 3)
-                    Grid[row][col] = make_unique<Queen>(Piece::Color::Black);
+                    Grid[row][col] = std::make_unique<Queen>(Piece::Color::Black);
                 else
                 {
-                    Grid[row][col] = make_unique<King>(Piece::Color::Black);
+                    Grid[row][col] = std::make_unique<King>(Piece::Color::Black);
                     BlackKingRow = row;
                     BlackKingCol = col;
                 }
@@ -34,16 +33,16 @@ void Board::Setup()
             else
             {
                 if (col == 0 || col == 7)
-                    Grid[row][col] = make_unique<Rook>(Piece::Color::White);
+                    Grid[row][col] = std::make_unique<Rook>(Piece::Color::White);
                 else if (col == 1 || col == 6)
-                    Grid[row][col] = make_unique<Knight>(Piece::Color::White);
+                    Grid[row][col] = std::make_unique<Knight>(Piece::Color::White);
                 else if (col == 2 || col == 5)
-                    Grid[row][col] = make_unique<Bishop>(Piece::Color::White);
+                    Grid[row][col] = std::make_unique<Bishop>(Piece::Color::White);
                 else if (col == 3)
-                    Grid[row][col] = make_unique<Queen>(Piece::Color::White);
+                    Grid[row][col] = std::make_unique<Queen>(Piece::Color::White);
                 else
                 {
-                    Grid[row][col] = make_unique<King>(Piece::Color::White);
+                    Grid[row][col] = std::make_unique<King>(Piece::Color::White);
                     WhiteKingRow = row;
                     WhiteKingCol = col;
                 }
@@ -64,7 +63,7 @@ bool Board::IsEmpty(int row, int col) const
 bool Board::MovePiece(int row1, int row2, int col1, int col2)
 {
     Grid[row2][col2] = move(Grid[row1][col1]);
-    cout << "Successful move.\n";
+    std::cout << "Successful move.\n";
     return true;
 }
 

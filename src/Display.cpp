@@ -1,25 +1,23 @@
-#include "../include/Dispaly.hpp"
+#include "Dispaly.hpp"
 #include <iostream>
-#include <iomanip>
-using namespace std;
 
 void Display::Draw(const Board &board)
 {
-    cout << left << setw(5) << "r\\c" << setw(5) << "a" << setw(5) << "b" << setw(5) << "c"
-              << setw(5) << "d" << setw(5) << "e" << setw(5) << "f" << setw(5) << "g" << setw(5)
-              << "h" << endl;
-    cout << right << setw(44) << "_______________________________________\n";
+    std::cout << "r\\c   " << "a   " << "b   " << "c   "
+             << "d   " << "e   " << "f   " << "g   "
+              << "h   " << std::endl;
+    std::cout << "   ___________________________________\n";
     for (int row = 0; row < 8; row++)
     {
-        cout << left << 8 - row << "  | ";
+        std::cout << 8 - row << "  |  ";
         for (int col = 0; col < 8; col++)
         {
             Piece *piece = board.GetPiece(row, col);
             if (piece != nullptr)
-                cout << piece->GetSymbol() << setw(4) << static_cast<char>(piece->GetColor());
+                std::cout << piece->GetSymbol() << "   ";
             else
-                cout << setw(5) << ' ';
+                std::cout << "    ";
         }
-        cout << endl;
+        std::cout << std::endl;
     }
 }
