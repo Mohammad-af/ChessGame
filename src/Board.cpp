@@ -1,5 +1,6 @@
 #include "Board.hpp"
 #include <iostream>
+#include <cmath>
 
 void Board::Setup()
 {
@@ -85,25 +86,35 @@ int Board::GetKingCol(Piece::Color color) const
 
 bool Board::IsPathClear(int row1, int row2, int col1, int col2, Piece *piece)
 {
-    switch (piece->GetType())
+    Piece *end_move = GetPiece(row2, col2);
+    int row_dir = (row2 > row1) ? 1 : ((row2 < row1) ? -1 : 0); // if(row2>row1)row_dir=1; else if(row2<row1)row_dir=-1; else row_dir=0;
+    int col_dir = (col2 > col1) ? 1 : ((col2 < col1) ? -1 : 0);
+    int current_row = row1 + row_dir;
+    int current_col = col1 + col_dir;
+    if (end_move != nullptr && end_move->GetColor() == piece->GetColor())
+        return false; // Friendly pieces cannot go on the same square.
+    if (piece->GetType() != Piece::PieceType::Knight)
     {
-    case Piece::PieceType::Rook:
-    {
-        int row_dir = (row2 > row1) ? 1 : ((row2 < row1) ? -1 : 0); // if(row2>row1)row_dir=1; else if(row2<row1)row_dir=-1; else row_dir=0;
-        int col_dir = (col2 > col1) ? 1 : ((col2 < col1) ? -1 : 0);
-        int current_row = row1 + row_dir;
-        int current_col = col1 + col_dir;
-        while (current_row != row2 || current_col != col2)
+        while ((current_row != row2 || current_col != col2))
         {
             if (GetPiece(current_row, current_col) != nullptr)
                 return false;
             current_row += row_dir;
             current_col += col_dir;
         }
-        return true;
-        break;
     }
-    default:
-        return true;
+    if (piece->GetType() == Piece::PieceType::Pawn)
+    {
+        if (col_dir != 0)
+        {
+            if (end_move == nullptr)
+                return false; // If Pawn moves diagonally it has to take an opponent's piece.
+        }
+        else
+        {
+            if (end_move != nullptr)
+                return false; // If Pawn moves vertically the square must be empty.
+        }
     }
+    return true;
 }
