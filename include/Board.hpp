@@ -14,7 +14,7 @@
 class Board
 {
 private:
-    std::unique_ptr<Piece> Grid[8][8];
+    std::unique_ptr<Piece> grid[8][8];
     int whiteKingRow;
     int whiteKingCol;
     int blackKingRow;
@@ -28,6 +28,7 @@ public:
     int GetKingRow(Piece::Color) const;
     int GetKingCol(Piece::Color) const;
     bool IsPathClear(int, int, int, int, Piece *);
+    bool IsSquareAttacked(int, int, Piece::Color);
 };
 
 #endif

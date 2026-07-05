@@ -14,7 +14,7 @@ std::string Game::UserInput() const
             std::cout << "\nBlack move: ";
         std::cin >> user_move;
         if (user_move.length() != 4)
-            std::cout << "INVALID INPUT FORMAT! Use this format: a2a3\n";
+            std::cout << "\nINVALID INPUT FORMAT! Use this format: a2a3\n\n";
     } while (user_move.length() != 4);
     return user_move;
 }
@@ -34,50 +34,52 @@ bool Game::ValidateMove(const std::string &user_move)
     row2 = 7 - (user_move[3] - '1');
     if (row1 < 0 || row1 >= 8 || row2 < 0 || row2 >= 8 || col1 < 0 || col1 >= 8 || col2 < 0 || col2 >= 8)
     {
-        std::cout << "INVALID MOVE! Enter coloumn a-h and row 1-8.\n";
+        std::cout << "\nINVALID MOVE! Enter coloumn a-h and row 1-8.\n\n";
         return false;
     }
     if (board.GetPiece(row1, col1) == nullptr)
     {
-        std::cout << "INVALID MOVE! The starting point has no pieces in it.\n";
+        std::cout << "\nINVALID MOVE! The starting point has no pieces in it.\n\n";
         return false;
     }
     if (board.GetPiece(row1, col1)->GetColor() != TurnColor())
     {
-        std::cout << "INVALID MOVE! You cannot move the opponent's piece.\n";
+        std::cout << "\nINVALID MOVE! You cannot move the opponent's piece.\n\n";
         return false;
     }
     if (row1 == row2 && col1 == col2)
     {
-        std::cout << "INVALID MOVE! You cannot move to the same place.\n";
+        std::cout << "\nINVALID MOVE! You cannot move to the same place.\n\n";
         return false;
     }
     Piece *piece = board.GetPiece(row1, col1);
-    if (!(piece->IsValidMove(row1, row2, col1, col2, piece->GetColor())))
+    if (!(piece->IsValidMove(row1, col1, row2, col2)))
     {
-        std::cout << "INVALID MOVE! This piece cannot move like this.\n";
+        std::cout << "\nINVALID MOVE! This piece cannot move like this.\n\n";
         return false;
     }
-    if (!(board.IsPathClear(row1, row2, col1, col2, piece)))
+    if (!(board.IsPathClear(row1, col1, row2, col2, piece)))
     {
-        std::cout << "INVALID MOVE! The path is not clear or you cannot move diagonally with pawn here.\n";
+        std::cout << "\nINVALID MOVE! The path is not clear or you cannot move diagonally with pawn here.\n\n";
         return false;
     }
     if (piece->IsFirstMove())
         piece->MarkAsMoved();
-    board.MovePiece(row1, row2, col1, col2);
+    board.MovePiece(row1, col1, row2, col2);
     turn++;
     return true;
 }
 
-void Game::GameState()
+Game::GameStatus Game::GameState()
 {
-    bool check = IsSquareAttacked(board.GetKingRow(TurnColor()), board.GetKingCol(TurnColor()), TurnColor());
-}
-
-bool Game::IsSquareAttacked(int row, int col, Piece::Color turn_color) const
-{
-    return false;
+    Piece::Color opponent_color;
+    if (TurnColor() == Piece::Color::White)
+        opponent_color = Piece::Color::Black;
+    if (TurnColor() == Piece::Color::Black)
+        opponent_color = Piece::Color::White;
+    if (board.IsSquareAttacked(board.GetKingRow(TurnColor()), board.GetKingCol(TurnColor()), opponent_color))
+        return GameStatus::Check;
+    return GameStatus::Play;
 }
 
 Piece::Color Game::TurnColor() const

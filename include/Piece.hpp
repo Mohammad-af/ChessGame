@@ -28,7 +28,8 @@ private:
 public:
     Piece(Color);
     virtual ~Piece() = default;
-    virtual bool IsValidMove(int, int, int, int, Color) const = 0;
+    virtual bool IsValidMove(int, int, int, int) const = 0;
+    virtual bool AttacksSquare(int, int, int, int) const = 0;
     virtual std::string GetSymbol() const = 0;
     virtual PieceType GetType() const = 0;
     Color GetColor() const;

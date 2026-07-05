@@ -7,7 +7,8 @@ class Rook : public Piece
 {
 public:
     Rook(Piece::Color);
-    virtual bool IsValidMove(int, int, int, int, Color) const override;
+    virtual bool IsValidMove(int, int, int, int) const override;
+    virtual bool AttacksSquare(int, int, int, int) const override;
     virtual std::string GetSymbol() const override;
     virtual Piece::PieceType GetType() const override;
 };

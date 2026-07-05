@@ -23,8 +23,7 @@ private:
 public:
     std::string UserInput() const;
     bool ValidateMove(const std::string &);
-    void GameState();
-    bool IsSquareAttacked(int, int, Piece::Color) const;
+    GameStatus GameState();
     Piece::Color TurnColor() const;
     void Setup();
     void Draw() const;
