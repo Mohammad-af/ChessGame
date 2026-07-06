@@ -24,7 +24,7 @@ public:
     void Setup();
     Piece *GetPiece(int, int) const;
     bool IsEmpty(int, int) const;
-    bool MovePiece(int, int, int, int);
+    void MovePiece(int, int, int, int);
     int GetKingRow(Piece::Color) const;
     int GetKingCol(Piece::Color) const;
     bool IsPathClear(int, int, int, int, Piece *);

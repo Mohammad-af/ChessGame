@@ -61,11 +61,7 @@ bool Board::IsEmpty(int row, int col) const
     return false;
 }
 
-bool Board::MovePiece(int row1, int col1, int row2, int col2)
-{
-    grid[row2][col2] = move(grid[row1][col1]);
-    return true;
-}
+void Board::MovePiece(int row1, int col1, int row2, int col2) { grid[row2][col2] = move(grid[row1][col1]); }
 
 int Board::GetKingRow(Piece::Color color) const
 {
