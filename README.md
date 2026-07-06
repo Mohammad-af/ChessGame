@@ -52,11 +52,12 @@ Implemented features:
 
 ## Future Plans
 
+- Undo for illegal moves
+- Checkmate detection
+- Stalemate detection
 - Castling
 - En passant
 - Pawn promotion
-- Checkmate detection
-- Stalemate detection
 - Save and load game
 
 ## License
