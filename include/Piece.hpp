@@ -1,6 +1,7 @@
 #ifndef PIECE_HPP
 #define PIECE_HPP
 
+#include "Move.hpp"
 #include <string>
 
 class Piece
@@ -28,8 +29,8 @@ private:
 public:
     Piece(Color);
     virtual ~Piece() = default;
-    virtual bool IsValidMove(int, int, int, int) const = 0;
-    virtual bool AttacksSquare(int, int, int, int) const = 0;
+    virtual bool IsValidMove(const Move &) const = 0;
+    virtual bool AttacksSquare(const Move &) const = 0;
     virtual std::string GetSymbol() const = 0;
     virtual PieceType GetType() const = 0;
     Color GetColor() const;

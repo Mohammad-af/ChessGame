@@ -4,6 +4,7 @@
 #include <string>
 #include "Board.hpp"
 #include "Dispaly.hpp"
+#include "Move.hpp"
 
 class Game
 {

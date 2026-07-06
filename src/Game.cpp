@@ -53,17 +53,29 @@ bool Game::ValidateMove(const std::string &user_move)
         return false;
     }
     Piece *piece = board.GetPiece(row1, col1);
-    if (!(piece->IsValidMove(row1, col1, row2, col2)))
+    Move move(row1, col1, row2, col2);
+    if (!(piece->IsValidMove(move)))
     {
         std::cout << "\nINVALID MOVE! This piece cannot move like this.\n\n";
         return false;
     }
-    if (!(board.IsPathClear(row1, col1, row2, col2, piece)))
+    if (!(board.IsPathClear(move, piece)))
     {
         std::cout << "\nINVALID MOVE! The path is not clear or you cannot move diagonally with pawn here.\n\n";
         return false;
     }
-    board.MovePiece(row1, col1, row2, col2);
+    board.ApplyMove(move);
+    Piece::Color opponent_color;
+    if (GetTurnColor() == Piece::Color::White)
+        opponent_color = Piece::Color::Black;
+    if (GetTurnColor() == Piece::Color::Black)
+        opponent_color = Piece::Color::White;
+    if (board.IsSquareAttacked(board.GetKingRow(GetTurnColor()), board.GetKingCol(GetTurnColor()), opponent_color))
+    {
+        std::cout << "\nINVALID MOVE! You cannot put your King in danger.\n\n";
+        board.UndoMove(move);
+        return false;
+    }
     if (piece->IsFirstMove())
         piece->MarkAsMoved();
     turn++;

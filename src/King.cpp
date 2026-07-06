@@ -3,14 +3,14 @@
 
 King::King(Color color) : Piece(color) {}
 
-bool King::IsValidMove(int row1, int col1, int row2, int col2) const
+bool King::IsValidMove(const Move &move) const
 {
-    if ((abs(row1 - row2) <= 1 && abs(col1 - col2) <= 1) || (row1 - row2 == 0 && abs(col1 - col2) == 2)) // The secend condition happens when we castle.
-        return true;
+    if ((abs(move.GetFromRow() - move.GetToRow()) <= 1 && abs(move.GetFromCol() - move.GetToCol()) <= 1) || (move.GetFromRow() - move.GetToRow() == 0 && abs(move.GetFromCol() - move.GetToCol()) == 2))
+        return true; // The secend condition happens when we castle.
     return false;
 }
 
-bool King::AttacksSquare(int row1, int col1, int row2, int col2) const { return IsValidMove(row1, col1, row2, col2); }
+bool King::AttacksSquare(const Move &move) const { return IsValidMove(move); }
 
 std::string King::GetSymbol() const
 {

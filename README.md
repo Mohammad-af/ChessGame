@@ -49,6 +49,7 @@ Implemented features:
 - Console rendering
 - Unicode characters
 - Check detection
+- Prevent illegal moves
 
 ## Future Plans
 

@@ -2,14 +2,14 @@
 
 Rook::Rook(Color color) : Piece(color) {}
 
-bool Rook::IsValidMove(int row1, int col1, int row2, int col2) const
+bool Rook::IsValidMove(const Move &move) const
 {
-    if (row1 - row2 == 0 || col1 - col2 == 0)
+    if (move.GetFromRow() - move.GetToRow() == 0 || move.GetFromCol() - move.GetToCol() == 0)
         return true;
     return false;
 }
 
-bool Rook::AttacksSquare(int row1, int col1, int row2, int col2) const { return IsValidMove(row1, col1, row2, col2); }
+bool Rook::AttacksSquare(const Move &move) const { return IsValidMove(move); }
 
 std::string Rook::GetSymbol() const
 {

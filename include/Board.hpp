@@ -10,6 +10,7 @@
 #include "Bishop.hpp"
 #include "Queen.hpp"
 #include "King.hpp"
+#include "Move.hpp"
 
 class Board
 {
@@ -24,10 +25,11 @@ public:
     void Setup();
     Piece *GetPiece(int, int) const;
     bool IsEmpty(int, int) const;
-    void MovePiece(int, int, int, int);
+    void ApplyMove(Move &);
+    void UndoMove(Move &);
     int GetKingRow(Piece::Color) const;
     int GetKingCol(Piece::Color) const;
-    bool IsPathClear(int, int, int, int, Piece *);
+    bool IsPathClear(const Move &, Piece *);
     bool IsSquareAttacked(int, int, Piece::Color);
 };
 

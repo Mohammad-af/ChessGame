@@ -61,20 +61,44 @@ bool Board::IsEmpty(int row, int col) const
     return false;
 }
 
-void Board::MovePiece(int row1, int col1, int row2, int col2)
+void Board::ApplyMove(Move &move)
 {
-    Piece *piece = grid[row1][col1].get();
-    if (piece->GetType() == Piece::PieceType::King && piece->GetColor() == Piece::Color::White)
+    Piece *piece = grid[move.GetFromRow()][move.GetFromCol()].get();
+    if (piece->GetType() == Piece::PieceType::King)
     {
-        whiteKingRow = row2;
-        whiteKingCol = col2;
+        if (piece->GetColor() == Piece::Color::White)
+        {
+            whiteKingRow = move.GetToRow();
+            whiteKingCol = move.GetToCol();
+        }
+        else
+        {
+            blackKingRow = move.GetToRow();
+            blackKingCol = move.GetToCol();
+        }
     }
-    else if (piece->GetType() == Piece::PieceType::King && piece->GetColor() == Piece::Color::Black)
+    move.SetCapturedPiece(std::move(grid[move.GetToRow()][move.GetToCol()]));
+    grid[move.GetToRow()][move.GetToCol()] = std::move(grid[move.GetFromRow()][move.GetFromCol()]);
+}
+
+void Board::UndoMove(Move &move)
+{
+    Piece *piece = grid[move.GetToRow()][move.GetToCol()].get();
+    if (piece->GetType() == Piece::PieceType::King)
     {
-        blackKingRow = row2;
-        blackKingCol = col2;
+        if (piece->GetColor() == Piece::Color::White)
+        {
+            whiteKingRow = move.GetToRow();
+            whiteKingCol = move.GetToCol();
+        }
+        else
+        {
+            blackKingRow = move.GetToRow();
+            blackKingCol = move.GetToCol();
+        }
     }
-    grid[row2][col2] = move(grid[row1][col1]);
+    grid[move.GetFromRow()][move.GetFromCol()] = std::move(grid[move.GetToRow()][move.GetToCol()]);
+    grid[move.GetToRow()][move.GetToCol()] = move.ReleaseCapturedPiece();
 }
 
 int Board::GetKingRow(Piece::Color color) const
@@ -93,18 +117,18 @@ int Board::GetKingCol(Piece::Color color) const
         return blackKingCol;
 }
 
-bool Board::IsPathClear(int row1, int col1, int row2, int col2, Piece *piece)
+bool Board::IsPathClear(const Move &move, Piece *piece)
 {
-    Piece *end_move = GetPiece(row2, col2);
-    int row_dir = (row2 > row1) ? 1 : ((row2 < row1) ? -1 : 0); // if(row2>row1)row_dir=1; else if(row2<row1)row_dir=-1; else row_dir=0;
-    int col_dir = (col2 > col1) ? 1 : ((col2 < col1) ? -1 : 0);
-    int current_row = row1 + row_dir;
-    int current_col = col1 + col_dir;
+    Piece *end_move = GetPiece(move.GetToRow(), move.GetToCol());
+    int row_dir = (move.GetToRow() > move.GetFromRow()) ? 1 : ((move.GetToRow() < move.GetFromRow()) ? -1 : 0); // if(move.GetToRow()>move.GetFromRow())row_dir=1; else if(move.GetToRow()<move.GetFromRow())row_dir=-1; else row_dir=0;
+    int col_dir = (move.GetToCol() > move.GetFromCol()) ? 1 : ((move.GetToCol() < move.GetFromCol()) ? -1 : 0);
+    int current_row = move.GetFromRow() + row_dir;
+    int current_col = move.GetFromCol() + col_dir;
     if (end_move != nullptr && end_move->GetColor() == piece->GetColor())
         return false; // Friendly pieces cannot go on the same square.
     if (piece->GetType() != Piece::PieceType::Knight)
     {
-        while ((current_row != row2 || current_col != col2))
+        while ((current_row != move.GetToRow() || current_col != move.GetToCol()))
         {
             if (GetPiece(current_row, current_col) != nullptr)
                 return false;
@@ -136,7 +160,8 @@ bool Board::IsSquareAttacked(int square_row, int square_col, Piece::Color attack
             Piece *piece = grid[row][col].get();
             if (piece != nullptr && piece->GetColor() == attacker_color)
             {
-                if ((piece->GetType() == Piece::PieceType::Pawn && piece->AttacksSquare(row, square_row, col, square_col)) || (piece->GetType() != Piece::PieceType::Pawn && piece->AttacksSquare(row, col, square_row, square_col) && IsPathClear(row, col, square_row, square_col, piece)))
+                Move move(row, col, square_row, square_col);
+                if ((piece->GetType() == Piece::PieceType::Pawn && piece->AttacksSquare(move)) || (piece->GetType() != Piece::PieceType::Pawn && piece->AttacksSquare(move) && IsPathClear(move, piece)))
                     return true;
             }
         }

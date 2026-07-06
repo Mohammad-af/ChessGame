@@ -3,16 +3,16 @@
 
 Queen::Queen(Color color) : Piece(color) {}
 
-bool Queen::IsValidMove(int row1, int col1, int row2, int col2) const
+bool Queen::IsValidMove(const Move &move) const
 {
-    if (abs(row1 - row2) == abs(col1 - col2))
+    if (abs(move.GetFromRow() - move.GetToRow()) == abs(move.GetFromCol() - move.GetToCol()))
         return true;
-    if (row1 - row2 == 0 || col1 - col2 == 0)
+    if (move.GetFromRow() - move.GetToRow() == 0 || move.GetFromCol() - move.GetToCol() == 0)
         return true;
     return false;
 }
 
-bool Queen::AttacksSquare(int row1, int col1, int row2, int col2) const { return IsValidMove(row1, col1, row2, col2); }
+bool Queen::AttacksSquare(const Move &move) const { return IsValidMove(move); }
 
 std::string Queen::GetSymbol() const
 {

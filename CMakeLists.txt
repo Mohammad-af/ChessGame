@@ -9,7 +9,4 @@ file(GLOB SOURCES
     "src/*.cpp"
     "main.cpp"
 )
-add_executable(chess_game ${SOURCES}
-    include/Console.hpp
-    src/Console.cpp
-)
+add_executable(chess_game ${SOURCES})

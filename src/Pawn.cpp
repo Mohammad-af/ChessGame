@@ -3,20 +3,20 @@
 
 Pawn::Pawn(Color color) : Piece(color) {}
 
-bool Pawn::IsValidMove(int row1, int col1, int row2, int col2) const
+bool Pawn::IsValidMove(const Move &move) const
 {
-    if (GetColor() == Color::White && ((row1 - row2 == 1 && col1 - col2 == 0) || (row1 - row2 == 2 && col1 - col2 == 0 && IsFirstMove()) || (row1 - row2 == 1 && abs(col1 - col2) == 1)))
+    if (GetColor() == Color::White && ((move.GetFromRow() - move.GetToRow() == 1 && move.GetFromCol() - move.GetToCol() == 0) || (move.GetFromRow() - move.GetToRow() == 2 && move.GetFromCol() - move.GetToCol() == 0 && IsFirstMove()) || (move.GetFromRow() - move.GetToRow() == 1 && abs(move.GetFromCol() - move.GetToCol()) == 1)))
         return true;
-    if (GetColor() == Color::Black && ((row1 - row2 == -1 && col1 - col2 == 0) || (row1 - row2 == -2 && col1 - col2 == 0 && IsFirstMove()) || (row1 - row2 == -1 && abs(col1 - col2) == 1)))
+    if (GetColor() == Color::Black && ((move.GetFromRow() - move.GetToRow() == -1 && move.GetFromCol() - move.GetToCol() == 0) || (move.GetFromRow() - move.GetToRow() == -2 && move.GetFromCol() - move.GetToCol() == 0 && IsFirstMove()) || (move.GetFromRow() - move.GetToRow() == -1 && abs(move.GetFromCol() - move.GetToCol()) == 1)))
         return true;
     return false;
 }
 
-bool Pawn::AttacksSquare(int row1, int col1, int row2, int col2) const
+bool Pawn::AttacksSquare(const Move &move) const
 {
-    if (GetColor() == Color::White && row1 - row2 == 1 && abs(col1 - col2) == 1)
+    if (GetColor() == Color::White && move.GetFromRow() - move.GetToRow() == 1 && abs(move.GetFromCol() - move.GetToCol()) == 1)
         return true;
-    if (GetColor() == Color::Black && row1 - row2 == -1 && abs(col1 - col2) == 1)
+    if (GetColor() == Color::Black && move.GetFromRow() - move.GetToRow() == -1 && abs(move.GetFromCol() - move.GetToCol()) == 1)
         return true;
     return false;
 }
