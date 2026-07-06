@@ -53,7 +53,6 @@ Implemented features:
 
 ## Future Plans
 
-- Undo for illegal moves
 - Checkmate detection
 - Stalemate detection
 - Castling

@@ -1,8 +1,8 @@
 #ifndef PIECE_HPP
 #define PIECE_HPP
 
-#include "Move.hpp"
 #include <string>
+class Move;
 
 class Piece
 {

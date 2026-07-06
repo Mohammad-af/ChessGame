@@ -1,5 +1,6 @@
 #include "Knight.hpp"
 #include <cmath>
+#include "Move.hpp"
 
 Knight::Knight(Color color) : Piece(color) {}
 

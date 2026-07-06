@@ -1,5 +1,6 @@
 #include "Bishop.hpp"
 #include <cmath>
+#include "Move.hpp"
 
 Bishop::Bishop(Color color) : Piece(color) {}
 

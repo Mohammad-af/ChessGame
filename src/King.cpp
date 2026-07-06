@@ -1,5 +1,6 @@
 #include "King.hpp"
 #include <cmath>
+#include "Move.hpp"
 
 King::King(Color color) : Piece(color) {}
 

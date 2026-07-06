@@ -1,5 +1,6 @@
 #include "Queen.hpp"
 #include <cmath>
+#include "Move.hpp"
 
 Queen::Queen(Color color) : Piece(color) {}
 

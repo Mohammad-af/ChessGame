@@ -1,5 +1,6 @@
 #include "Pawn.hpp"
 #include <cmath>
+#include "Move.hpp"
 
 Pawn::Pawn(Color color) : Piece(color) {}
 

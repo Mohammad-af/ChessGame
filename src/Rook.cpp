@@ -1,4 +1,5 @@
 #include "Rook.hpp"
+#include "Move.hpp"
 
 Rook::Rook(Color color) : Piece(color) {}
 
