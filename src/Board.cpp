@@ -61,7 +61,21 @@ bool Board::IsEmpty(int row, int col) const
     return false;
 }
 
-void Board::MovePiece(int row1, int col1, int row2, int col2) { grid[row2][col2] = move(grid[row1][col1]); }
+void Board::MovePiece(int row1, int col1, int row2, int col2)
+{
+    Piece *piece = grid[row1][col1].get();
+    if (piece->GetType() == Piece::PieceType::King && piece->GetColor() == Piece::Color::White)
+    {
+        whiteKingRow = row2;
+        whiteKingCol = col2;
+    }
+    else if (piece->GetType() == Piece::PieceType::King && piece->GetColor() == Piece::Color::Black)
+    {
+        blackKingRow = row2;
+        blackKingCol = col2;
+    }
+    grid[row2][col2] = move(grid[row1][col1]);
+}
 
 int Board::GetKingRow(Piece::Color color) const
 {
