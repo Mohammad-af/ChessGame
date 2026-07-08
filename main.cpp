@@ -23,7 +23,7 @@ int main()
             switch (game.GameState())
             {
             case Game::GameStatus::Check:
-                std::cout << "IT'S CHECK! The " << game.GetColorTurnName() << " King is on check.\n\n";
+                std::cout << "IT'S CHECK! The " << game.GetTurnColorName() << " King is on check.\n\n";
                 break;
             default:
                 break;

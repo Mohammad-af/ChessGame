@@ -130,7 +130,7 @@ bool Board::IsPathClear(const Move &move, Piece *piece)
     {
         while ((current_row != move.GetToRow() || current_col != move.GetToCol()))
         {
-            if (GetPiece(current_row, current_col) != nullptr)
+            if (!IsEmpty(current_row, current_col))
                 return false;
             current_row += row_dir;
             current_col += col_dir;

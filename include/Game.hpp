@@ -26,7 +26,7 @@ public:
     bool ValidateMove(const std::string &);
     GameStatus GameState();
     Piece::Color GetTurnColor() const;
-    std::string GetColorTurnName() const;
+    std::string GetTurnColorName() const;
     void Setup();
     void Draw() const;
 };

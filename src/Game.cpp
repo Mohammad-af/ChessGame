@@ -37,7 +37,7 @@ bool Game::ValidateMove(const std::string &user_move)
         std::cout << "\nINVALID MOVE! Enter coloumn a-h and row 1-8.\n\n";
         return false;
     }
-    if (board.GetPiece(row1, col1) == nullptr)
+    if (board.IsEmpty(row1, col1))
     {
         std::cout << "\nINVALID MOVE! The starting point has no pieces in it.\n\n";
         return false;
@@ -102,7 +102,7 @@ Piece::Color Game::GetTurnColor() const
         return Piece::Color::Black;
 }
 
-std::string Game::GetColorTurnName() const
+std::string Game::GetTurnColorName() const
 {
     if (GetTurnColor() == Piece::Color::White)
         return "White";
