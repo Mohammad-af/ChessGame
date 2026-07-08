@@ -22,8 +22,8 @@ private:
     static int turn;
 
 public:
-    std::string UserInput() const;
-    bool ValidateMove(const std::string &);
+    Move UserInput() const;
+    bool ValidateMove(Move &);
     GameStatus GameState();
     Piece::Color GetTurnColor() const;
     std::string GetTurnColorName() const;
