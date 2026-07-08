@@ -8,15 +8,14 @@ int main()
 {
     SetupConsole();
     bool run_game = true;
-    std::string user_move;
     Game game;
     game.Setup();
     while (run_game)
     {
         ClearConsole();
         game.Draw();
-        user_move = game.UserInput();
-        if (game.ValidateMove(user_move))
+        Move move = game.UserInput();
+        if (game.ValidateMove(move))
         {
             ClearConsole();
             game.Draw();
