@@ -6,7 +6,7 @@ Knight::Knight(Color color) : Piece(color) {}
 
 bool Knight::IsValidMove(const Move &move) const
 {
-    if ((abs(move.GetFromRow() - move.GetToRow()) == 2 && abs(move.GetFromCol() - move.GetToCol()) == 1) || (abs(move.GetFromRow() - move.GetToRow()) == 1 && abs(move.GetFromCol() - move.GetToCol()) == 2))
+    if ((std::abs(move.GetFromRow() - move.GetToRow()) == 2 && std::abs(move.GetFromCol() - move.GetToCol()) == 1) || (std::abs(move.GetFromRow() - move.GetToRow()) == 1 && std::abs(move.GetFromCol() - move.GetToCol()) == 2))
         return true;
     return false;
 }

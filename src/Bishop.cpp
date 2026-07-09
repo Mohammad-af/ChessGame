@@ -6,7 +6,7 @@ Bishop::Bishop(Color color) : Piece(color) {}
 
 bool Bishop::IsValidMove(const Move &move) const
 {
-    if (abs(move.GetFromRow() - move.GetToRow()) == abs(move.GetFromCol() - move.GetToCol()))
+    if (std::abs(move.GetFromRow() - move.GetToRow()) == std::abs(move.GetFromCol() - move.GetToCol()))
         return true;
     return false;
 }

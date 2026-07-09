@@ -6,7 +6,7 @@ Queen::Queen(Color color) : Piece(color) {}
 
 bool Queen::IsValidMove(const Move &move) const
 {
-    if (abs(move.GetFromRow() - move.GetToRow()) == abs(move.GetFromCol() - move.GetToCol()))
+    if (std::abs(move.GetFromRow() - move.GetToRow()) == std::abs(move.GetFromCol() - move.GetToCol()))
         return true;
     if (move.GetFromRow() - move.GetToRow() == 0 || move.GetFromCol() - move.GetToCol() == 0)
         return true;

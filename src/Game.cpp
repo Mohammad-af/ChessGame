@@ -38,12 +38,12 @@ Move Game::UserInput() const
 
 bool Game::ValidateMove(Move &move)
 {
-    if (board.IsEmpty(move.GetFromRow(), move.GetToCol()))
+    if (board.IsEmpty(move.GetFromRow(), move.GetFromCol()))
     {
         std::cout << "\nINVALID MOVE! The starting point has no pieces in it.\n\n";
         return false;
     }
-    if (board.GetPiece(move.GetFromRow(), move.GetToCol())->GetColor() != GetTurnColor())
+    if (board.GetPiece(move.GetFromRow(), move.GetFromCol())->GetColor() != GetTurnColor())
     {
         std::cout << "\nINVALID MOVE! You cannot move the opponent's piece.\n\n";
         return false;
@@ -53,7 +53,7 @@ bool Game::ValidateMove(Move &move)
         std::cout << "\nINVALID MOVE! You cannot move to the same place.\n\n";
         return false;
     }
-    Piece *piece = board.GetPiece(move.GetFromRow(), move.GetToCol());
+    Piece *piece = board.GetPiece(move.GetFromRow(), move.GetFromCol());
     if (!(piece->IsValidMove(move)))
     {
         std::cout << "\nINVALID MOVE! This piece cannot move like this.\n\n";
@@ -66,10 +66,7 @@ bool Game::ValidateMove(Move &move)
     }
     board.ApplyMove(move);
     Piece::Color opponent_color;
-    if (GetTurnColor() == Piece::Color::White)
-        opponent_color = Piece::Color::Black;
-    if (GetTurnColor() == Piece::Color::Black)
-        opponent_color = Piece::Color::White;
+    opponent_color = (GetTurnColor() == Piece::Color::White) ? Piece::Color::Black : Piece::Color::White;
     if (board.IsSquareAttacked(board.GetKingRow(GetTurnColor()), board.GetKingCol(GetTurnColor()), opponent_color))
     {
         std::cout << "\nINVALID MOVE! You cannot put your King in danger.\n\n";
@@ -85,10 +82,7 @@ bool Game::ValidateMove(Move &move)
 Game::GameStatus Game::GameState()
 {
     Piece::Color opponent_color;
-    if (GetTurnColor() == Piece::Color::White)
-        opponent_color = Piece::Color::Black;
-    if (GetTurnColor() == Piece::Color::Black)
-        opponent_color = Piece::Color::White;
+    opponent_color = (GetTurnColor() == Piece::Color::White) ? Piece::Color::Black : Piece::Color::White;
     if (board.IsSquareAttacked(board.GetKingRow(GetTurnColor()), board.GetKingCol(GetTurnColor()), opponent_color))
         return GameStatus::Check;
     return GameStatus::Play;

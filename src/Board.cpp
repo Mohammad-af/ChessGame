@@ -88,13 +88,13 @@ void Board::UndoMove(Move &move)
     {
         if (piece->GetColor() == Piece::Color::White)
         {
-            whiteKingRow = move.GetToRow();
-            whiteKingCol = move.GetToCol();
+            whiteKingRow = move.GetFromRow();
+            whiteKingCol = move.GetFromCol();
         }
         else
         {
-            blackKingRow = move.GetToRow();
-            blackKingCol = move.GetToCol();
+            blackKingRow = move.GetFromRow();
+            blackKingCol = move.GetFromCol();
         }
     }
     grid[move.GetFromRow()][move.GetFromCol()] = std::move(grid[move.GetToRow()][move.GetToCol()]);

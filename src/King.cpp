@@ -6,7 +6,7 @@ King::King(Color color) : Piece(color) {}
 
 bool King::IsValidMove(const Move &move) const
 {
-    if ((abs(move.GetFromRow() - move.GetToRow()) <= 1 && abs(move.GetFromCol() - move.GetToCol()) <= 1) || (move.GetFromRow() - move.GetToRow() == 0 && abs(move.GetFromCol() - move.GetToCol()) == 2))
+    if ((std::abs(move.GetFromRow() - move.GetToRow()) <= 1 && std::abs(move.GetFromCol() - move.GetToCol()) <= 1) || (move.GetFromRow() - move.GetToRow() == 0 && std::abs(move.GetFromCol() - move.GetToCol()) == 2))
         return true; // The secend condition happens when we castle.
     return false;
 }
