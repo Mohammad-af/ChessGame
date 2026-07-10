@@ -21,8 +21,16 @@ int main()
             game.Draw();
             switch (game.GameState())
             {
+            case Game::GameStatus::Checkmate:
+                std::cout << "IT'S CHECKMATE! " << game.GetColorName(game.GetOpponentColor()) << " WON.\n\n";
+                run_game = false;
+                break;
             case Game::GameStatus::Check:
-                std::cout << "IT'S CHECK! The " << game.GetTurnColorName() << " King is on check.\n\n";
+                std::cout << "IT'S CHECK! The " << game.GetColorName(game.GetTurnColor()) << " King is on check.\n\n";
+                break;
+            case Game::GameStatus::Stalemate:
+                std::cout << "IT'S STALEMATE! It's a DRAW.\n\n";
+                run_game = false;
                 break;
             default:
                 break;

@@ -31,6 +31,8 @@ public:
     int GetKingCol(Piece::Color) const;
     bool IsPathClear(const Move &, Piece *);
     bool IsSquareAttacked(int, int, Piece::Color);
+    bool IsMoveLegal(Move &, Piece::Color);
+    bool HasLegalMove(Piece::Color);
 };
 
 #endif

@@ -50,11 +50,11 @@ Implemented features:
 - Unicode characters
 - Check detection
 - Prevent illegal moves
+- Checkmate detection
+- Stalemate detection
 
 ## Future Plans
 
-- Checkmate detection
-- Stalemate detection
 - Castling
 - En passant
 - Pawn promotion

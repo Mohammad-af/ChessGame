@@ -151,6 +151,7 @@ bool Board::IsPathClear(const Move &move, Piece *piece)
     }
     return true;
 }
+
 bool Board::IsSquareAttacked(int square_row, int square_col, Piece::Color attacker_color)
 {
     for (int row = 0; row < 8; row++)
@@ -163,6 +164,58 @@ bool Board::IsSquareAttacked(int square_row, int square_col, Piece::Color attack
                 Move move(row, col, square_row, square_col);
                 if ((piece->GetType() == Piece::PieceType::Pawn && piece->AttacksSquare(move)) || (piece->GetType() != Piece::PieceType::Pawn && piece->AttacksSquare(move) && IsPathClear(move, piece)))
                     return true;
+            }
+        }
+    }
+    return false;
+}
+
+bool Board::IsMoveLegal(Move &move, Piece::Color turn_color)
+{   // HasLegalMove calls this function and some of this conditions are checked in that function but for safety and also making this function not fully reliable on function HasLegalMove, we will still check those conditions in this function.
+    if (IsEmpty(move.GetFromRow(), move.GetFromCol()))
+        return false;
+    if (GetPiece(move.GetFromRow(), move.GetFromCol())->GetColor() != turn_color)
+        return false;
+    if (move.GetFromRow() == move.GetToRow() && move.GetFromCol() == move.GetToCol())
+        return false;
+    Piece *piece = GetPiece(move.GetFromRow(), move.GetFromCol());
+    if (!(piece->IsValidMove(move)))
+        return false;
+    if (!(IsPathClear(move, piece)))
+        return false;
+    ApplyMove(move);
+    Piece::Color opponent_color = (turn_color == Piece::Color::White) ? Piece::Color::Black : Piece::Color::White;
+    if (IsSquareAttacked(GetKingRow(turn_color), GetKingCol(turn_color), opponent_color))
+    {
+        UndoMove(move);
+        return false;
+    }
+    UndoMove(move);
+    return true;
+}
+
+bool Board::HasLegalMove(Piece::Color turnColor)
+{
+    for (int from_row = 0; from_row < 8; from_row++)
+    {
+        for (int from_col = 0; from_col < 8; from_col++)
+        {
+
+            if (IsEmpty(from_row, from_col))
+                continue;
+            Piece *piece = GetPiece(from_row, from_col);
+            if (piece->GetColor() != turnColor)
+                continue;
+            for (int to_row = 0; to_row < 8; to_row++)
+            {
+                for (int to_col = 0; to_col < 8; to_col++)
+                {
+                    if (from_row == to_row && from_col == to_col)
+                        continue;
+                    Move move(from_row, from_col, to_row, to_col);
+                    if (IsMoveLegal(move, turnColor))
+                        return true;
+                }
             }
         }
     }
