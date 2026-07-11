@@ -6,12 +6,21 @@
 
 class Move
 {
+public:
+    enum class Type
+    {
+        Normal,
+        Castling,
+        EnPassant,
+        Promotion
+    };
+
 private:
     int fromRow;
     int fromCol;
     int toRow;
     int toCol;
-    std::unique_ptr<Piece> capturedPiece = nullptr;
+    Type moveType;
 
 public:
     Move(int, int, int, int);
@@ -19,8 +28,8 @@ public:
     int GetFromCol() const;
     int GetToRow() const;
     int GetToCol() const;
-    void SetCapturedPiece(std::unique_ptr<Piece> &&);
-    std::unique_ptr<Piece> ReleaseCapturedPiece();
+    void SetMoveType(Type);
+    Type GetMoveType() const;
 };
 
 #endif

@@ -61,10 +61,10 @@ bool Board::IsEmpty(int row, int col) const
     return false;
 }
 
-void Board::ApplyMove(Move &move)
+void Board::ApplyMove(Move &move, const std::optional<Move> &last_move)
 {
     Piece *piece = grid[move.GetFromRow()][move.GetFromCol()].get();
-    if (piece->GetType() == Piece::PieceType::King)
+    if (piece->GetType() == Piece::Type::King)
     {
         if (piece->GetColor() == Piece::Color::White)
         {
@@ -77,14 +77,22 @@ void Board::ApplyMove(Move &move)
             blackKingCol = move.GetToCol();
         }
     }
-    move.SetCapturedPiece(std::move(grid[move.GetToRow()][move.GetToCol()]));
-    grid[move.GetToRow()][move.GetToCol()] = std::move(grid[move.GetFromRow()][move.GetFromCol()]);
+    if (move.GetMoveType() == Move::Type::EnPassant)
+    {
+        SetCapturedPiece(std::move(grid[last_move->GetToRow()][last_move->GetToCol()]));
+        grid[move.GetToRow()][move.GetToCol()] = std::move(grid[move.GetFromRow()][move.GetFromCol()]);
+    }
+    else
+    {
+        SetCapturedPiece(std::move(grid[move.GetToRow()][move.GetToCol()]));
+        grid[move.GetToRow()][move.GetToCol()] = std::move(grid[move.GetFromRow()][move.GetFromCol()]);
+    }
 }
 
-void Board::UndoMove(Move &move)
+void Board::UndoMove(Move &move, const std::optional<Move> &last_move)
 {
     Piece *piece = grid[move.GetToRow()][move.GetToCol()].get();
-    if (piece->GetType() == Piece::PieceType::King)
+    if (piece->GetType() == Piece::Type::King)
     {
         if (piece->GetColor() == Piece::Color::White)
         {
@@ -97,8 +105,16 @@ void Board::UndoMove(Move &move)
             blackKingCol = move.GetFromCol();
         }
     }
-    grid[move.GetFromRow()][move.GetFromCol()] = std::move(grid[move.GetToRow()][move.GetToCol()]);
-    grid[move.GetToRow()][move.GetToCol()] = move.ReleaseCapturedPiece();
+    if (move.GetMoveType() == Move::Type::EnPassant)
+    {
+        grid[move.GetFromRow()][move.GetFromCol()] = std::move(grid[move.GetToRow()][move.GetToCol()]);
+        grid[last_move->GetToRow()][last_move->GetToCol()] = ReleaseCapturedPiece();
+    }
+    else
+    {
+        grid[move.GetFromRow()][move.GetFromCol()] = std::move(grid[move.GetToRow()][move.GetToCol()]);
+        grid[move.GetToRow()][move.GetToCol()] = ReleaseCapturedPiece();
+    }
 }
 
 int Board::GetKingRow(Piece::Color color) const
@@ -117,7 +133,11 @@ int Board::GetKingCol(Piece::Color color) const
         return blackKingCol;
 }
 
-bool Board::IsPathClear(const Move &move, Piece *piece)
+void Board::SetCapturedPiece(std::unique_ptr<Piece> &&piece) { capturedPiece = std::move(piece); }
+
+std::unique_ptr<Piece> Board::ReleaseCapturedPiece() { return std::move(capturedPiece); }
+
+bool Board::IsPathClear(Move &move, Piece *piece, const std::optional<Move> &last_move)
 {
     Piece *end_move = GetPiece(move.GetToRow(), move.GetToCol());
     int row_dir = (move.GetToRow() > move.GetFromRow()) ? 1 : ((move.GetToRow() < move.GetFromRow()) ? -1 : 0); // if(move.GetToRow()>move.GetFromRow())row_dir=1; else if(move.GetToRow()<move.GetFromRow())row_dir=-1; else row_dir=0;
@@ -126,7 +146,7 @@ bool Board::IsPathClear(const Move &move, Piece *piece)
     int current_col = move.GetFromCol() + col_dir;
     if (end_move != nullptr && end_move->GetColor() == piece->GetColor())
         return false; // Friendly pieces cannot go on the same square.
-    if (piece->GetType() != Piece::PieceType::Knight)
+    if (piece->GetType() != Piece::Type::Knight)
     {
         while ((current_row != move.GetToRow() || current_col != move.GetToCol()))
         {
@@ -136,12 +156,15 @@ bool Board::IsPathClear(const Move &move, Piece *piece)
             current_col += col_dir;
         }
     }
-    if (piece->GetType() == Piece::PieceType::Pawn)
+    if (piece->GetType() == Piece::Type::Pawn)
     {
         if (col_dir != 0)
         {
             if (end_move == nullptr)
-                return false; // If Pawn moves diagonally it has to take an opponent's piece.
+            {
+                if (!DetectEnPassant(move, last_move)) // If Pawn moves diagonally into an empty square it has to be EnPassant.
+                    return false;
+            }
         }
         else
         {
@@ -152,7 +175,7 @@ bool Board::IsPathClear(const Move &move, Piece *piece)
     return true;
 }
 
-bool Board::IsSquareAttacked(int square_row, int square_col, Piece::Color attacker_color)
+bool Board::IsSquareAttacked(int square_row, int square_col, Piece::Color attacker_color, const std::optional<Move> &last_move)
 {
     for (int row = 0; row < 8; row++)
     {
@@ -162,7 +185,7 @@ bool Board::IsSquareAttacked(int square_row, int square_col, Piece::Color attack
             if (piece != nullptr && piece->GetColor() == attacker_color)
             {
                 Move move(row, col, square_row, square_col);
-                if ((piece->GetType() == Piece::PieceType::Pawn && piece->AttacksSquare(move)) || (piece->GetType() != Piece::PieceType::Pawn && piece->AttacksSquare(move) && IsPathClear(move, piece)))
+                if ((piece->GetType() == Piece::Type::Pawn && piece->AttacksSquare(move)) || (piece->GetType() != Piece::Type::Pawn && piece->AttacksSquare(move) && IsPathClear(move, piece, last_move)))
                     return true;
             }
         }
@@ -170,8 +193,27 @@ bool Board::IsSquareAttacked(int square_row, int square_col, Piece::Color attack
     return false;
 }
 
-bool Board::IsMoveLegal(Move &move, Piece::Color turn_color)
-{   // HasLegalMove calls this function and some of this conditions are checked in that function but for safety and also making this function not fully reliable on function HasLegalMove, we will still check those conditions in this function.
+bool Board::DetectEnPassant(Move &move, const std::optional<Move> &last_move)
+{
+    if (!last_move.has_value())
+        return false;
+    if (std::abs(last_move->GetFromRow() - last_move->GetToRow()) != 2)
+        return false;
+    if (last_move->GetToRow() == move.GetFromRow() && std::abs(last_move->GetToCol() - move.GetFromCol()) != 1)
+        return false;
+    int col_dir = (move.GetToCol() > move.GetFromCol()) ? 1 : ((move.GetToCol() < move.GetFromCol()) ? -1 : 0);
+    if (col_dir == 0)
+        return false;
+    Piece *end_move = GetPiece(move.GetToRow(), move.GetToCol());
+    if (end_move != nullptr)
+        return false;
+    move.SetMoveType(Move::Type::EnPassant);
+    return true;
+}
+
+bool Board::IsMoveLegal(Move &move, Piece::Color turn_color, const std::optional<Move> &last_move)
+{ // HasLegalMove calls this function and some of this conditions are checked in that function but for safety and also making this function not fully reliable on function HasLegalMove, we will still check those conditions in this function.
+    move.SetMoveType(Move::Type::Normal);
     if (IsEmpty(move.GetFromRow(), move.GetFromCol()))
         return false;
     if (GetPiece(move.GetFromRow(), move.GetFromCol())->GetColor() != turn_color)
@@ -181,26 +223,25 @@ bool Board::IsMoveLegal(Move &move, Piece::Color turn_color)
     Piece *piece = GetPiece(move.GetFromRow(), move.GetFromCol());
     if (!(piece->IsValidMove(move)))
         return false;
-    if (!(IsPathClear(move, piece)))
+    if (!(IsPathClear(move, piece, last_move)))
         return false;
-    ApplyMove(move);
+    ApplyMove(move, last_move);
     Piece::Color opponent_color = (turn_color == Piece::Color::White) ? Piece::Color::Black : Piece::Color::White;
-    if (IsSquareAttacked(GetKingRow(turn_color), GetKingCol(turn_color), opponent_color))
+    if (IsSquareAttacked(GetKingRow(turn_color), GetKingCol(turn_color), opponent_color, last_move))
     {
-        UndoMove(move);
+        UndoMove(move, last_move);
         return false;
     }
-    UndoMove(move);
+    UndoMove(move, last_move);
     return true;
 }
 
-bool Board::HasLegalMove(Piece::Color turnColor)
+bool Board::HasLegalMove(Piece::Color turnColor, const std::optional<Move> &last_move)
 {
     for (int from_row = 0; from_row < 8; from_row++)
     {
         for (int from_col = 0; from_col < 8; from_col++)
         {
-
             if (IsEmpty(from_row, from_col))
                 continue;
             Piece *piece = GetPiece(from_row, from_col);
@@ -213,7 +254,7 @@ bool Board::HasLegalMove(Piece::Color turnColor)
                     if (from_row == to_row && from_col == to_col)
                         continue;
                     Move move(from_row, from_col, to_row, to_col);
-                    if (IsMoveLegal(move, turnColor))
+                    if (IsMoveLegal(move, turnColor, last_move))
                         return true;
                 }
             }

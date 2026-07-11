@@ -1,8 +1,9 @@
 #ifndef BOARD_HPP
 #define BOARD_HPP
 
-#include <memory>
+#include <memory> // For data type std::unique_ptr<Piece>.
 #include <string>
+#include <optional>
 #include "Piece.hpp"
 #include "Pawn.hpp"
 #include "Rook.hpp"
@@ -20,19 +21,23 @@ private:
     int whiteKingCol;
     int blackKingRow;
     int blackKingCol;
+    std::unique_ptr<Piece> capturedPiece = nullptr;
 
 public:
     void Setup();
     Piece *GetPiece(int, int) const;
     bool IsEmpty(int, int) const;
-    void ApplyMove(Move &);
-    void UndoMove(Move &);
+    void ApplyMove(Move &, const std::optional<Move> &);
+    void UndoMove(Move &, const std::optional<Move> &);
     int GetKingRow(Piece::Color) const;
     int GetKingCol(Piece::Color) const;
-    bool IsPathClear(const Move &, Piece *);
-    bool IsSquareAttacked(int, int, Piece::Color);
-    bool IsMoveLegal(Move &, Piece::Color);
-    bool HasLegalMove(Piece::Color);
+    void SetCapturedPiece(std::unique_ptr<Piece> &&);
+    std::unique_ptr<Piece> ReleaseCapturedPiece();
+    bool IsPathClear(Move &, Piece *, const std::optional<Move> &);
+    bool IsSquareAttacked(int, int, Piece::Color, const std::optional<Move> &);
+    bool DetectEnPassant(Move &, const std::optional<Move> &);
+    bool IsMoveLegal(Move &, Piece::Color, const std::optional<Move> &);
+    bool HasLegalMove(Piece::Color, const std::optional<Move> &);
 };
 
 #endif

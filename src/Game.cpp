@@ -1,6 +1,6 @@
 #include "Game.hpp"
 #include <iostream>
-#include <cctype>
+#include <cctype> // For character functions like std::tolower(int).
 
 int Game::turn = 1;
 
@@ -35,6 +35,7 @@ Move Game::UserInput() const
 
 bool Game::ValidateMove(Move &move)
 {
+    move.SetMoveType(Move::Type::Normal);
     if (board.IsEmpty(move.GetFromRow(), move.GetFromCol()))
     {
         std::cout << "\nINVALID MOVE! The starting point has no pieces in it.\n\n";
@@ -56,41 +57,49 @@ bool Game::ValidateMove(Move &move)
         std::cout << "\nINVALID MOVE! This piece cannot move like this.\n\n";
         return false;
     }
-    if (!(board.IsPathClear(move, piece)))
+    if (!(board.IsPathClear(move, piece, lastMove)))
     {
-        std::cout << "\nINVALID MOVE! The path is not clear or you cannot move diagonally with pawn here.\n\n";
+        std::cout << "\nINVALID MOVE! The path is not clear or it's not allowed.\n\n";
         return false;
     }
-    board.ApplyMove(move);
+    if (piece->GetType() == Piece::Type::Pawn)
+    {
+        if (move.GetFromCol() != move.GetToCol() && board.IsEmpty(move.GetToRow(), move.GetToCol()))
+        {
+            move.SetMoveType(Move::Type::EnPassant);
+        }
+    }
+    board.ApplyMove(move, lastMove);
     Piece::Color opponent_color = GetOpponentColor();
-    if (board.IsSquareAttacked(board.GetKingRow(GetTurnColor()), board.GetKingCol(GetTurnColor()), opponent_color))
+    if (board.IsSquareAttacked(board.GetKingRow(GetTurnColor()), board.GetKingCol(GetTurnColor()), opponent_color, lastMove))
     {
         std::cout << "\nINVALID MOVE! You cannot put your King in danger.\n\n";
-        board.UndoMove(move);
+        board.UndoMove(move, lastMove);
         return false;
     }
     if (piece->IsFirstMove())
         piece->MarkAsMoved();
+    lastMove = move;
     turn++;
     return true;
 }
 
-Game::GameStatus Game::GameState()
+Game::Status Game::GameState()
 {
     Piece::Color opponent_color = GetOpponentColor();
-    if (board.IsSquareAttacked(board.GetKingRow(GetTurnColor()), board.GetKingCol(GetTurnColor()), opponent_color))
+    if (board.IsSquareAttacked(board.GetKingRow(GetTurnColor()), board.GetKingCol(GetTurnColor()), opponent_color, lastMove))
     {
-        if (!board.HasLegalMove(GetTurnColor()))
-            return GameStatus::Checkmate;
+        if (!board.HasLegalMove(GetTurnColor(), lastMove))
+            return Status::Checkmate;
         else
-            return GameStatus::Check;
+            return Status::Check;
     }
     else
     {
-        if (!board.HasLegalMove(GetTurnColor()))
-            return GameStatus::Stalemate;
+        if (!board.HasLegalMove(GetTurnColor(), lastMove))
+            return Status::Stalemate;
         else
-            return GameStatus::Play;
+            return Status::Play;
     }
 }
 

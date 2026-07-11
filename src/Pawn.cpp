@@ -30,4 +30,4 @@ std::string Pawn::GetSymbol() const
         return u8"♟";
 }
 
-Piece::PieceType Pawn::GetType() const { return PieceType::Pawn; }
+Piece::Type Pawn::GetType() const { return Type::Pawn; }

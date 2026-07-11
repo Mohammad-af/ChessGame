@@ -10,6 +10,6 @@ int Move::GetToRow() const { return toRow; }
 
 int Move::GetToCol() const { return toCol; }
 
-void Move::SetCapturedPiece(std::unique_ptr<Piece> &&piece) { capturedPiece = std::move(piece); }
+void Move::SetMoveType(Move::Type move_type) { moveType = move_type; }
 
-std::unique_ptr<Piece> Move::ReleaseCapturedPiece() { return std::move(capturedPiece); }
+Move::Type Move::GetMoveType() const { return moveType; }

@@ -20,4 +20,4 @@ std::string Rook::GetSymbol() const
         return u8"♜";
 }
 
-Piece::PieceType Rook::GetType() const { return PieceType::Rook; }
+Piece::Type Rook::GetType() const { return Type::Rook; }

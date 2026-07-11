@@ -21,4 +21,4 @@ std::string Knight::GetSymbol() const
         return u8"♞";
 }
 
-Piece::PieceType Knight::GetType() const { return PieceType::Knight; }
+Piece::Type Knight::GetType() const { return Type::Knight; }

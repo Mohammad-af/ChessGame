@@ -12,7 +12,7 @@ public:
         White = 'w',
         Black = 'b'
     };
-    enum class PieceType
+    enum class Type
     {
         Pawn,
         Knight,
@@ -32,7 +32,7 @@ public:
     virtual bool IsValidMove(const Move &) const = 0;
     virtual bool AttacksSquare(const Move &) const = 0;
     virtual std::string GetSymbol() const = 0;
-    virtual PieceType GetType() const = 0;
+    virtual Type GetType() const = 0;
     Color GetColor() const;
     bool IsFirstMove() const;
     void MarkAsMoved();

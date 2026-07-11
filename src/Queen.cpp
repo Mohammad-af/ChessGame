@@ -23,4 +23,4 @@ std::string Queen::GetSymbol() const
         return u8"♛";
 }
 
-Piece::PieceType Queen::GetType() const { return PieceType::Queen; }
+Piece::Type Queen::GetType() const { return Type::Queen; }

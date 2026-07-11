@@ -52,11 +52,11 @@ Implemented features:
 - Prevent illegal moves
 - Checkmate detection
 - Stalemate detection
+- En passant
 
 ## Future Plans
 
 - Castling
-- En passant
 - Pawn promotion
 - Save and load game
 

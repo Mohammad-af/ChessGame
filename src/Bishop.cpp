@@ -21,4 +21,4 @@ std::string Bishop::GetSymbol() const
         return u8"♝";
 }
 
-Piece::PieceType Bishop::GetType() const { return PieceType::Bishop; }
+Piece::Type Bishop::GetType() const { return Type::Bishop; }
