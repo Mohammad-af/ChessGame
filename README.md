@@ -53,10 +53,10 @@ Implemented features:
 - Checkmate detection
 - Stalemate detection
 - En passant
+- Castling
 
 ## Future Plans
 
-- Castling
 - Pawn promotion
 - Save and load game
 

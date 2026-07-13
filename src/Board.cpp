@@ -1,5 +1,4 @@
 #include "Board.hpp"
-#include <iostream>
 #include <cmath>
 
 void Board::Setup()
@@ -63,7 +62,7 @@ bool Board::IsEmpty(int row, int col) const
 
 void Board::ApplyMove(Move &move, const std::optional<Move> &last_move)
 {
-    Piece *piece = grid[move.GetFromRow()][move.GetFromCol()].get();
+    Piece *piece = GetPiece(move.GetFromRow(), move.GetFromCol());
     if (piece->GetType() == Piece::Type::King)
     {
         if (piece->GetColor() == Piece::Color::White)
@@ -77,7 +76,17 @@ void Board::ApplyMove(Move &move, const std::optional<Move> &last_move)
             blackKingCol = move.GetToCol();
         }
     }
-    if (move.GetMoveType() == Move::Type::EnPassant)
+    if (move.GetMoveType() == Move::Type::CastleKingSide)
+    {
+        grid[move.GetToRow()][move.GetToCol()] = std::move(grid[move.GetFromRow()][move.GetFromCol()]);
+        grid[move.GetToRow()][5] = std::move(grid[move.GetFromRow()][7]);
+    }
+    else if (move.GetMoveType() == Move::Type::CastleQueenSide)
+    {
+        grid[move.GetToRow()][move.GetToCol()] = std::move(grid[move.GetFromRow()][move.GetFromCol()]);
+        grid[move.GetToRow()][3] = std::move(grid[move.GetFromRow()][0]);
+    }
+    else if (move.GetMoveType() == Move::Type::EnPassant)
     {
         SetCapturedPiece(std::move(grid[last_move->GetToRow()][last_move->GetToCol()]));
         grid[move.GetToRow()][move.GetToCol()] = std::move(grid[move.GetFromRow()][move.GetFromCol()]);
@@ -91,7 +100,7 @@ void Board::ApplyMove(Move &move, const std::optional<Move> &last_move)
 
 void Board::UndoMove(Move &move, const std::optional<Move> &last_move)
 {
-    Piece *piece = grid[move.GetToRow()][move.GetToCol()].get();
+    Piece *piece = GetPiece(move.GetToRow(), move.GetToCol());
     if (piece->GetType() == Piece::Type::King)
     {
         if (piece->GetColor() == Piece::Color::White)
@@ -105,7 +114,17 @@ void Board::UndoMove(Move &move, const std::optional<Move> &last_move)
             blackKingCol = move.GetFromCol();
         }
     }
-    if (move.GetMoveType() == Move::Type::EnPassant)
+    if (move.GetMoveType() == Move::Type::CastleKingSide)
+    {
+        grid[move.GetFromRow()][move.GetFromCol()] = std::move(grid[move.GetToRow()][move.GetToCol()]);
+        grid[move.GetFromRow()][7] = std::move(grid[move.GetToRow()][5]);
+    }
+    else if (move.GetMoveType() == Move::Type::CastleQueenSide)
+    {
+        grid[move.GetFromRow()][move.GetFromCol()] = std::move(grid[move.GetToRow()][move.GetToCol()]);
+        grid[move.GetFromRow()][0] = std::move(grid[move.GetToRow()][3]);
+    }
+    else if (move.GetMoveType() == Move::Type::EnPassant)
     {
         grid[move.GetFromRow()][move.GetFromCol()] = std::move(grid[move.GetToRow()][move.GetToCol()]);
         grid[last_move->GetToRow()][last_move->GetToCol()] = ReleaseCapturedPiece();
@@ -156,22 +175,8 @@ bool Board::IsPathClear(Move &move, Piece *piece, const std::optional<Move> &las
             current_col += col_dir;
         }
     }
-    if (piece->GetType() == Piece::Type::Pawn)
-    {
-        if (col_dir != 0)
-        {
-            if (end_move == nullptr)
-            {
-                if (!DetectEnPassant(move, last_move)) // If Pawn moves diagonally into an empty square it has to be EnPassant.
-                    return false;
-            }
-        }
-        else
-        {
-            if (end_move != nullptr)
-                return false; // If Pawn moves vertically the square must be empty.
-        }
-    }
+    if (piece->GetType() == Piece::Type::Pawn && col_dir == 0 && end_move != nullptr)
+        return false; // If Pawn moves vertically the square must be empty.
     return true;
 }
 
@@ -181,11 +186,11 @@ bool Board::IsSquareAttacked(int square_row, int square_col, Piece::Color attack
     {
         for (int col = 0; col < 8; col++)
         {
-            Piece *piece = grid[row][col].get();
+            Piece *piece = GetPiece(row, col);
             if (piece != nullptr && piece->GetColor() == attacker_color)
             {
                 Move move(row, col, square_row, square_col);
-                if ((piece->GetType() == Piece::Type::Pawn && piece->AttacksSquare(move)) || (piece->GetType() != Piece::Type::Pawn && piece->AttacksSquare(move) && IsPathClear(move, piece, last_move)))
+                if (piece->AttacksSquare(move) && IsPathClear(move, piece, last_move))
                     return true;
             }
         }
@@ -199,16 +204,46 @@ bool Board::DetectEnPassant(Move &move, const std::optional<Move> &last_move)
         return false;
     if (std::abs(last_move->GetFromRow() - last_move->GetToRow()) != 2)
         return false;
-    if (last_move->GetToRow() == move.GetFromRow() && std::abs(last_move->GetToCol() - move.GetFromCol()) != 1)
+    if (last_move->GetToRow() != move.GetFromRow() || std::abs(last_move->GetToCol() - move.GetFromCol()) != 1)
         return false;
-    int col_dir = (move.GetToCol() > move.GetFromCol()) ? 1 : ((move.GetToCol() < move.GetFromCol()) ? -1 : 0);
-    if (col_dir == 0)
-        return false;
+    int col_dir = (move.GetToCol() > move.GetFromCol()) ? 1 : -1;
     Piece *end_move = GetPiece(move.GetToRow(), move.GetToCol());
     if (end_move != nullptr)
         return false;
     move.SetMoveType(Move::Type::EnPassant);
     return true;
+}
+
+bool Board::DetectCastling(Move &move, const std::optional<Move> &last_move)
+{
+    Piece *piece = GetPiece(move.GetFromRow(), move.GetFromCol());
+    if (!piece->IsFirstMove())
+        return false;
+    int row = (piece->GetColor() == Piece::Color::White) ? 7 : 0;
+    Piece *rook = GetPiece(row, 7);
+    if (rook == nullptr)
+        return false;
+    Piece::Color opponent_color = (piece->GetColor() == Piece::Color::White) ? Piece::Color::Black : Piece::Color::White;
+    if (move.GetToCol() == 6)
+    {
+        if (rook->IsFirstMove() && !IsSquareAttacked(move.GetFromRow(), move.GetFromCol(), opponent_color, last_move) && !IsSquareAttacked(row, 5, opponent_color, last_move) && !IsSquareAttacked(row, 6, opponent_color, last_move))
+        {
+            move.SetMoveType(Move::Type::CastleKingSide);
+            return true;
+        }
+    }
+    else
+    {
+        Piece *rook = GetPiece(row, 0);
+        if (rook == nullptr)
+            return false;
+        if (rook->IsFirstMove() && IsEmpty(row, 1)  && !IsSquareAttacked(move.GetFromRow(), move.GetFromCol(), opponent_color, last_move) && !IsSquareAttacked(row, 3, opponent_color, last_move) && !IsSquareAttacked(row, 2, opponent_color, last_move))
+        {
+            move.SetMoveType(Move::Type::CastleQueenSide);
+            return true;
+        }
+    }
+    return false;
 }
 
 bool Board::IsMoveLegal(Move &move, Piece::Color turn_color, const std::optional<Move> &last_move)
@@ -225,6 +260,16 @@ bool Board::IsMoveLegal(Move &move, Piece::Color turn_color, const std::optional
         return false;
     if (!(IsPathClear(move, piece, last_move)))
         return false;
+    if (piece->GetType() == Piece::Type::Pawn && move.GetFromCol() != move.GetToCol() && IsEmpty(move.GetToRow(), move.GetToCol()))
+    {
+        if (!DetectEnPassant(move, last_move))
+            return false;
+    }
+    if (piece->GetType() == Piece::Type::King && std::abs(move.GetFromCol() - move.GetToCol()) == 2)
+    {
+        if (!DetectCastling(move, last_move))
+            return false;
+    }
     ApplyMove(move, last_move);
     Piece::Color opponent_color = (turn_color == Piece::Color::White) ? Piece::Color::Black : Piece::Color::White;
     if (IsSquareAttacked(GetKingRow(turn_color), GetKingCol(turn_color), opponent_color, last_move))

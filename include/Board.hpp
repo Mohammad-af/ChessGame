@@ -36,6 +36,7 @@ public:
     bool IsPathClear(Move &, Piece *, const std::optional<Move> &);
     bool IsSquareAttacked(int, int, Piece::Color, const std::optional<Move> &);
     bool DetectEnPassant(Move &, const std::optional<Move> &);
+    bool DetectCastling(Move &, const std::optional<Move> &);
     bool IsMoveLegal(Move &, Piece::Color, const std::optional<Move> &);
     bool HasLegalMove(Piece::Color, const std::optional<Move> &);
 };

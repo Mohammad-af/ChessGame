@@ -1,6 +1,7 @@
 #include "Game.hpp"
 #include <iostream>
 #include <cctype> // For character functions like std::tolower(int).
+#include <cmath>
 
 int Game::turn = 1;
 
@@ -59,14 +60,23 @@ bool Game::ValidateMove(Move &move)
     }
     if (!(board.IsPathClear(move, piece, lastMove)))
     {
-        std::cout << "\nINVALID MOVE! The path is not clear or it's not allowed.\n\n";
+        std::cout << "\nINVALID MOVE! The path is not clear.\n\n";
         return false;
     }
-    if (piece->GetType() == Piece::Type::Pawn)
+    if (piece->GetType() == Piece::Type::Pawn && move.GetFromCol() != move.GetToCol() && board.IsEmpty(move.GetToRow(), move.GetToCol()))
     {
-        if (move.GetFromCol() != move.GetToCol() && board.IsEmpty(move.GetToRow(), move.GetToCol()))
+        if (!board.DetectEnPassant(move, lastMove))
         {
-            move.SetMoveType(Move::Type::EnPassant);
+            std::cout << "\nINVALID MOVE! You cannot move diagonally to an empty space with the Pawn unless it's En Passant and the conditions are met.\n\n";
+            return false;
+        }
+    }
+    if (piece->GetType() == Piece::Type::King && std::abs(move.GetFromCol() - move.GetToCol()) == 2)
+    {
+        if (!board.DetectCastling(move, lastMove))
+        {
+            std::cout << "\nINVALID MOVE! You cannot move 2 squares with the King unless it's Castling and the conditions are met.\n\n";
+            return false;
         }
     }
     board.ApplyMove(move, lastMove);

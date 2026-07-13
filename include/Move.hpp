@@ -10,7 +10,8 @@ public:
     enum class Type
     {
         Normal,
-        Castling,
+        CastleKingSide,
+        CastleQueenSide,
         EnPassant,
         Promotion
     };
