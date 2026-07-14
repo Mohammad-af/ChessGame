@@ -63,6 +63,7 @@ bool Board::IsEmpty(int row, int col) const
 void Board::ApplyMove(Move &move, const std::optional<Move> &last_move)
 {
     Piece *piece = GetPiece(move.GetFromRow(), move.GetFromCol());
+    SetCapturedPiece(nullptr);
     if (piece->GetType() == Piece::Type::King)
     {
         if (piece->GetColor() == Piece::Color::White)
@@ -85,6 +86,21 @@ void Board::ApplyMove(Move &move, const std::optional<Move> &last_move)
     {
         grid[move.GetToRow()][move.GetToCol()] = std::move(grid[move.GetFromRow()][move.GetFromCol()]);
         grid[move.GetToRow()][3] = std::move(grid[move.GetFromRow()][0]);
+    }
+    else if (move.GetMoveType() == Move::Type::Promotion)
+    {
+        if (move.GetFromCol() != move.GetToCol())
+            SetCapturedPiece(std::move(grid[move.GetToRow()][move.GetToCol()]));
+        grid[move.GetToRow()][move.GetToCol()] = std::move(grid[move.GetFromRow()][move.GetFromCol()]);
+        promotedPawn = std::move(grid[move.GetToRow()][move.GetToCol()]);
+        if (move.GetPromotionType() == Piece::Type::Queen)
+            grid[move.GetToRow()][move.GetToCol()] = std::make_unique<Queen>(piece->GetColor());
+        else if (move.GetPromotionType() == Piece::Type::Rook)
+            grid[move.GetToRow()][move.GetToCol()] = std::make_unique<Rook>(piece->GetColor());
+        else if (move.GetPromotionType() == Piece::Type::Knight)
+            grid[move.GetToRow()][move.GetToCol()] = std::make_unique<Knight>(piece->GetColor());
+        else
+            grid[move.GetToRow()][move.GetToCol()] = std::make_unique<Bishop>(piece->GetColor());
     }
     else if (move.GetMoveType() == Move::Type::EnPassant)
     {
@@ -124,6 +140,14 @@ void Board::UndoMove(Move &move, const std::optional<Move> &last_move)
         grid[move.GetFromRow()][move.GetFromCol()] = std::move(grid[move.GetToRow()][move.GetToCol()]);
         grid[move.GetFromRow()][0] = std::move(grid[move.GetToRow()][3]);
     }
+    else if (move.GetMoveType() == Move::Type::Promotion)
+    {
+        grid[move.GetToRow()][move.GetToCol()] = ReleasePromotedPawn();
+        grid[move.GetFromRow()][move.GetFromCol()] = std::move(grid[move.GetToRow()][move.GetToCol()]);
+        promotedPawn = nullptr;
+        if (move.GetFromCol() != move.GetToCol())
+            grid[move.GetToRow()][move.GetToCol()] = ReleaseCapturedPiece();
+    }
     else if (move.GetMoveType() == Move::Type::EnPassant)
     {
         grid[move.GetFromRow()][move.GetFromCol()] = std::move(grid[move.GetToRow()][move.GetToCol()]);
@@ -156,7 +180,11 @@ void Board::SetCapturedPiece(std::unique_ptr<Piece> &&piece) { capturedPiece = s
 
 std::unique_ptr<Piece> Board::ReleaseCapturedPiece() { return std::move(capturedPiece); }
 
-bool Board::IsPathClear(Move &move, Piece *piece, const std::optional<Move> &last_move)
+void Board::SetPromotedPawn(std::unique_ptr<Piece> &&pawn) { promotedPawn = std::move(pawn); }
+
+std::unique_ptr<Piece> Board::ReleasePromotedPawn() { return std::move(promotedPawn); }
+
+bool Board::IsPathClear(const Move &move, Piece *piece, const std::optional<Move> &last_move) const
 {
     Piece *end_move = GetPiece(move.GetToRow(), move.GetToCol());
     int row_dir = (move.GetToRow() > move.GetFromRow()) ? 1 : ((move.GetToRow() < move.GetFromRow()) ? -1 : 0); // if(move.GetToRow()>move.GetFromRow())row_dir=1; else if(move.GetToRow()<move.GetFromRow())row_dir=-1; else row_dir=0;
@@ -180,7 +208,7 @@ bool Board::IsPathClear(Move &move, Piece *piece, const std::optional<Move> &las
     return true;
 }
 
-bool Board::IsSquareAttacked(int square_row, int square_col, Piece::Color attacker_color, const std::optional<Move> &last_move)
+bool Board::IsSquareAttacked(int square_row, int square_col, Piece::Color attacker_color, const std::optional<Move> &last_move) const
 {
     for (int row = 0; row < 8; row++)
     {
@@ -196,6 +224,44 @@ bool Board::IsSquareAttacked(int square_row, int square_col, Piece::Color attack
         }
     }
     return false;
+}
+
+bool Board::DetectCastling(Move &move, const std::optional<Move> &last_move)
+{
+    Piece *piece = GetPiece(move.GetFromRow(), move.GetFromCol());
+    if (!piece->IsFirstMove())
+        return false;
+    int rook_row = (piece->GetColor() == Piece::Color::White) ? 7 : 0;
+    int rook_col = (move.GetToCol() == 6) ? 7 : 0;
+    Piece *rook = GetPiece(rook_row, rook_col);
+    if (rook == nullptr || rook->GetType() != Piece::Type::Rook)
+        return false;
+    Piece::Color opponent_color = (piece->GetColor() == Piece::Color::White) ? Piece::Color::Black : Piece::Color::White;
+    if (move.GetToCol() == 6)
+    {
+        if (rook->IsFirstMove() && !IsSquareAttacked(move.GetFromRow(), move.GetFromCol(), opponent_color, last_move) && !IsSquareAttacked(move.GetFromRow(), 5, opponent_color, last_move) && !IsSquareAttacked(move.GetFromRow(), 6, opponent_color, last_move))
+        {
+            move.SetMoveType(Move::Type::CastleKingSide);
+            return true;
+        }
+    }
+    else
+    {
+        if (rook->IsFirstMove() && IsEmpty(rook_row, 1) && !IsSquareAttacked(move.GetFromRow(), move.GetFromCol(), opponent_color, last_move) && !IsSquareAttacked(move.GetFromRow(), 3, opponent_color, last_move) && !IsSquareAttacked(move.GetFromRow(), 2, opponent_color, last_move))
+        {
+            move.SetMoveType(Move::Type::CastleQueenSide);
+            return true;
+        }
+    }
+    return false;
+}
+
+bool Board::DetectPromotion(Move &move)
+{
+    if (move.GetToRow() != 0 && move.GetToRow() != 7)
+        return false;
+    move.SetMoveType(Move::Type::Promotion);
+    return true;
 }
 
 bool Board::DetectEnPassant(Move &move, const std::optional<Move> &last_move)
@@ -214,38 +280,6 @@ bool Board::DetectEnPassant(Move &move, const std::optional<Move> &last_move)
     return true;
 }
 
-bool Board::DetectCastling(Move &move, const std::optional<Move> &last_move)
-{
-    Piece *piece = GetPiece(move.GetFromRow(), move.GetFromCol());
-    if (!piece->IsFirstMove())
-        return false;
-    int row = (piece->GetColor() == Piece::Color::White) ? 7 : 0;
-    Piece *rook = GetPiece(row, 7);
-    if (rook == nullptr)
-        return false;
-    Piece::Color opponent_color = (piece->GetColor() == Piece::Color::White) ? Piece::Color::Black : Piece::Color::White;
-    if (move.GetToCol() == 6)
-    {
-        if (rook->IsFirstMove() && !IsSquareAttacked(move.GetFromRow(), move.GetFromCol(), opponent_color, last_move) && !IsSquareAttacked(row, 5, opponent_color, last_move) && !IsSquareAttacked(row, 6, opponent_color, last_move))
-        {
-            move.SetMoveType(Move::Type::CastleKingSide);
-            return true;
-        }
-    }
-    else
-    {
-        Piece *rook = GetPiece(row, 0);
-        if (rook == nullptr)
-            return false;
-        if (rook->IsFirstMove() && IsEmpty(row, 1)  && !IsSquareAttacked(move.GetFromRow(), move.GetFromCol(), opponent_color, last_move) && !IsSquareAttacked(row, 3, opponent_color, last_move) && !IsSquareAttacked(row, 2, opponent_color, last_move))
-        {
-            move.SetMoveType(Move::Type::CastleQueenSide);
-            return true;
-        }
-    }
-    return false;
-}
-
 bool Board::IsMoveLegal(Move &move, Piece::Color turn_color, const std::optional<Move> &last_move)
 { // HasLegalMove calls this function and some of this conditions are checked in that function but for safety and also making this function not fully reliable on function HasLegalMove, we will still check those conditions in this function.
     move.SetMoveType(Move::Type::Normal);
@@ -260,9 +294,11 @@ bool Board::IsMoveLegal(Move &move, Piece::Color turn_color, const std::optional
         return false;
     if (!(IsPathClear(move, piece, last_move)))
         return false;
-    if (piece->GetType() == Piece::Type::Pawn && move.GetFromCol() != move.GetToCol() && IsEmpty(move.GetToRow(), move.GetToCol()))
+    if (piece->GetType() == Piece::Type::Pawn)
     {
-        if (!DetectEnPassant(move, last_move))
+        if (DetectPromotion(move))
+            move.SetPromotionType(Piece::Type::Queen);
+        else if (move.GetFromCol() != move.GetToCol() && IsEmpty(move.GetToRow(), move.GetToCol()) && !DetectEnPassant(move, last_move))
             return false;
     }
     if (piece->GetType() == Piece::Type::King && std::abs(move.GetFromCol() - move.GetToCol()) == 2)

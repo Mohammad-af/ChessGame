@@ -22,6 +22,7 @@ private:
     int blackKingRow;
     int blackKingCol;
     std::unique_ptr<Piece> capturedPiece = nullptr;
+    std::unique_ptr<Piece> promotedPawn = nullptr;
 
 public:
     void Setup();
@@ -33,10 +34,13 @@ public:
     int GetKingCol(Piece::Color) const;
     void SetCapturedPiece(std::unique_ptr<Piece> &&);
     std::unique_ptr<Piece> ReleaseCapturedPiece();
-    bool IsPathClear(Move &, Piece *, const std::optional<Move> &);
-    bool IsSquareAttacked(int, int, Piece::Color, const std::optional<Move> &);
-    bool DetectEnPassant(Move &, const std::optional<Move> &);
+    void SetPromotedPawn(std::unique_ptr<Piece> &&);
+    std::unique_ptr<Piece> ReleasePromotedPawn();
+    bool IsPathClear(const Move &, Piece *, const std::optional<Move> &) const;
+    bool IsSquareAttacked(int, int, Piece::Color, const std::optional<Move> &) const;
     bool DetectCastling(Move &, const std::optional<Move> &);
+    bool DetectEnPassant(Move &, const std::optional<Move> &);
+    bool DetectPromotion(Move &move);
     bool IsMoveLegal(Move &, Piece::Color, const std::optional<Move> &);
     bool HasLegalMove(Piece::Color, const std::optional<Move> &);
 };

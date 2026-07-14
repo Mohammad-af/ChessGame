@@ -13,3 +13,7 @@ int Move::GetToCol() const { return toCol; }
 void Move::SetMoveType(Move::Type move_type) { moveType = move_type; }
 
 Move::Type Move::GetMoveType() const { return moveType; }
+
+void Move::SetPromotionType(Piece::Type piece_type) { promotionType = piece_type; }
+
+Piece::Type Move::GetPromotionType() const { return promotionType; }

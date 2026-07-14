@@ -63,15 +63,43 @@ bool Game::ValidateMove(Move &move)
         std::cout << "\nINVALID MOVE! The path is not clear.\n\n";
         return false;
     }
-    if (piece->GetType() == Piece::Type::Pawn && move.GetFromCol() != move.GetToCol() && board.IsEmpty(move.GetToRow(), move.GetToCol()))
+    if (piece->GetType() == Piece::Type::Pawn)
     {
-        if (!board.DetectEnPassant(move, lastMove))
+        if (board.DetectPromotion(move))
+        {
+            char piece_type;
+            while (true)
+            {
+                std::cout << "Promote to (Q/R/N/B): ";
+                std::cin >> piece_type;
+                piece_type = std::toupper(piece_type);
+                if (piece_type == 'Q' || piece_type == 'R' || piece_type == 'N' || piece_type == 'B')
+                    break;
+                std::cout << "INVALID INPUT! Enter Q, R, N or B.\n";
+            }
+            switch (piece_type)
+            {
+            case 'Q':
+                move.SetPromotionType(Piece::Type::Queen);
+                break;
+            case 'R':
+                move.SetPromotionType(Piece::Type::Rook);
+                break;
+            case 'N':
+                move.SetPromotionType(Piece::Type::Knight);
+                break;
+            case 'B':
+                move.SetPromotionType(Piece::Type::Bishop);
+                break;
+            }
+        }
+        else if (move.GetFromCol() != move.GetToCol() && board.IsEmpty(move.GetToRow(), move.GetToCol()) && !board.DetectEnPassant(move, lastMove))
         {
             std::cout << "\nINVALID MOVE! You cannot move diagonally to an empty space with the Pawn unless it's En Passant and the conditions are met.\n\n";
             return false;
         }
     }
-    if (piece->GetType() == Piece::Type::King && std::abs(move.GetFromCol() - move.GetToCol()) == 2)
+    else if (piece->GetType() == Piece::Type::King && std::abs(move.GetFromCol() - move.GetToCol()) == 2)
     {
         if (!board.DetectCastling(move, lastMove))
         {

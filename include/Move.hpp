@@ -12,8 +12,8 @@ public:
         Normal,
         CastleKingSide,
         CastleQueenSide,
-        EnPassant,
-        Promotion
+        Promotion,
+        EnPassant
     };
 
 private:
@@ -22,6 +22,7 @@ private:
     int toRow;
     int toCol;
     Type moveType;
+    Piece::Type promotionType;
 
 public:
     Move(int, int, int, int);
@@ -31,6 +32,8 @@ public:
     int GetToCol() const;
     void SetMoveType(Type);
     Type GetMoveType() const;
+    void SetPromotionType(Piece::Type);
+    Piece::Type GetPromotionType() const;
 };
 
 #endif
