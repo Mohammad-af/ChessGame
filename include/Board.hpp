@@ -41,6 +41,7 @@ public:
     bool DetectCastling(Move &, const std::optional<Move> &);
     bool DetectEnPassant(Move &, const std::optional<Move> &);
     bool DetectPromotion(Move &move);
+    bool InsufficientMaterial() const;
     bool IsMoveLegal(Move &, Piece::Color, const std::optional<Move> &);
     bool HasLegalMove(Piece::Color, const std::optional<Move> &);
 };

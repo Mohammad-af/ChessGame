@@ -124,6 +124,8 @@ bool Game::ValidateMove(Move &move)
 
 Game::Status Game::GameState()
 {
+    if (board.InsufficientMaterial())
+        return Status::InsufficientMaterial;
     Piece::Color opponent_color = GetOpponentColor();
     if (board.IsSquareAttacked(board.GetKingRow(GetTurnColor()), board.GetKingCol(GetTurnColor()), opponent_color, lastMove))
     {

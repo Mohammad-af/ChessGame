@@ -280,6 +280,44 @@ bool Board::DetectEnPassant(Move &move, const std::optional<Move> &last_move)
     return true;
 }
 
+bool Board::InsufficientMaterial() const
+{
+    int white_bishop_num = 0;
+    int black_bishop_num = 0;
+    int white_knight_num = 0;
+    int black_knight_num = 0;
+    for (int row = 0; row < 8; row++)
+    {
+        for (int col = 0; col < 8; col++)
+        {
+            if (GetPiece(row, col) == nullptr)
+                continue;
+            Piece *piece = GetPiece(row, col);
+            if (piece->GetType() == Piece::Type::Queen || piece->GetType() == Piece::Type::Rook || piece->GetType() == Piece::Type::Pawn)
+                return false;
+            if (piece->GetType() == Piece::Type::Bishop)
+            {
+                if (piece->GetColor() == Piece::Color::White)
+                    white_bishop_num++;
+                else
+                    black_bishop_num++;
+            }
+            if (piece->GetType() == Piece::Type::Knight)
+            {
+                if (piece->GetColor() == Piece::Color::White)
+                    white_knight_num++;
+                else
+                    black_knight_num++;
+            }
+        }
+    }
+    if (white_bishop_num >= 2 || white_knight_num >= 2 || black_bishop_num >= 2 || black_knight_num >= 2)
+        return false;
+    if ((white_bishop_num == 1 && white_knight_num == 1) || (black_bishop_num == 1 && black_knight_num == 1))
+        return false;
+    return true;
+}
+
 bool Board::IsMoveLegal(Move &move, Piece::Color turn_color, const std::optional<Move> &last_move)
 { // HasLegalMove calls this function and some of this conditions are checked in that function but for safety and also making this function not fully reliable on function HasLegalMove, we will still check those conditions in this function.
     move.SetMoveType(Move::Type::Normal);

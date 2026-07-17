@@ -49,7 +49,7 @@ Implemented features:
 - Console rendering
 - Unicode characters
 - Check detection
-- Prevent illegal moves
+- Illegal move prevention
 - Checkmate detection
 - Stalemate detection
 - En passant

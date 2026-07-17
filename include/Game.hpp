@@ -15,7 +15,8 @@ public:
         Play,
         Check,
         Checkmate,
-        Stalemate
+        Stalemate,
+        InsufficientMaterial
     };
 
 private:

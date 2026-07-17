@@ -21,6 +21,10 @@ int main()
             game.Draw();
             switch (game.GameState())
             {
+            case Game::Status::InsufficientMaterial:
+                std::cout << "IT'S A DRAW! There is insufficient material to checkmate.\n\n";
+                run_game = false;
+                break;
             case Game::Status::Checkmate:
                 std::cout << "IT'S CHECKMATE! " << game.GetColorName(game.GetOpponentColor()) << " WON.\n\n";
                 run_game = false;
