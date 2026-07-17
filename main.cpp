@@ -25,6 +25,10 @@ int main()
                 std::cout << "IT'S A DRAW! There is insufficient material to checkmate.\n\n";
                 run_game = false;
                 break;
+            case Game::Status::FiftyMoveRule:
+                std::cout << "IT'S A DRAW! Fifty consecutive moves were made without a pawn move or capture.\n\n";
+                run_game = false;
+                break;
             case Game::Status::Checkmate:
                 std::cout << "IT'S CHECKMATE! " << game.GetColorName(game.GetOpponentColor()) << " WON.\n\n";
                 run_game = false;

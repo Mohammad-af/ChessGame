@@ -34,6 +34,7 @@ public:
     int GetKingCol(Piece::Color) const;
     void SetCapturedPiece(std::unique_ptr<Piece> &&);
     std::unique_ptr<Piece> ReleaseCapturedPiece();
+    bool HasCapturedPiece() const;
     void SetPromotedPawn(std::unique_ptr<Piece> &&);
     std::unique_ptr<Piece> ReleasePromotedPawn();
     bool IsPathClear(const Move &, Piece *, const std::optional<Move> &) const;

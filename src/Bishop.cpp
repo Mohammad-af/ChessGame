@@ -4,12 +4,7 @@
 
 Bishop::Bishop(Color color) : Piece(color) {}
 
-bool Bishop::IsValidMove(const Move &move) const
-{
-    if (std::abs(move.GetFromRow() - move.GetToRow()) == std::abs(move.GetFromCol() - move.GetToCol()))
-        return true;
-    return false;
-}
+bool Bishop::IsValidMove(const Move &move) const { return std::abs(move.GetFromRow() - move.GetToRow()) == std::abs(move.GetFromCol() - move.GetToCol()); }
 
 bool Bishop::AttacksSquare(const Move &move) const { return IsValidMove(move); }
 

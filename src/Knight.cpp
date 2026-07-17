@@ -4,12 +4,7 @@
 
 Knight::Knight(Color color) : Piece(color) {}
 
-bool Knight::IsValidMove(const Move &move) const
-{
-    if ((std::abs(move.GetFromRow() - move.GetToRow()) == 2 && std::abs(move.GetFromCol() - move.GetToCol()) == 1) || (std::abs(move.GetFromRow() - move.GetToRow()) == 1 && std::abs(move.GetFromCol() - move.GetToCol()) == 2))
-        return true;
-    return false;
-}
+bool Knight::IsValidMove(const Move &move) const { return (std::abs(move.GetFromRow() - move.GetToRow()) == 2 && std::abs(move.GetFromCol() - move.GetToCol()) == 1) || (std::abs(move.GetFromRow() - move.GetToRow()) == 1 && std::abs(move.GetFromCol() - move.GetToCol()) == 2); }
 
 bool Knight::AttacksSquare(const Move &move) const { return IsValidMove(move); }
 

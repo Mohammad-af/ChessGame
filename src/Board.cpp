@@ -53,12 +53,7 @@ void Board::Setup()
 
 Piece *Board::GetPiece(int row, int col) const { return grid[row][col].get(); }
 
-bool Board::IsEmpty(int row, int col) const
-{
-    if (grid[row][col] == nullptr)
-        return true;
-    return false;
-}
+bool Board::IsEmpty(int row, int col) const { return grid[row][col] == nullptr; }
 
 void Board::ApplyMove(Move &move, const std::optional<Move> &last_move)
 {
@@ -179,6 +174,8 @@ int Board::GetKingCol(Piece::Color color) const
 void Board::SetCapturedPiece(std::unique_ptr<Piece> &&piece) { capturedPiece = std::move(piece); }
 
 std::unique_ptr<Piece> Board::ReleaseCapturedPiece() { return std::move(capturedPiece); }
+
+bool Board::HasCapturedPiece() const { return capturedPiece != nullptr; }
 
 void Board::SetPromotedPawn(std::unique_ptr<Piece> &&pawn) { promotedPawn = std::move(pawn); }
 

@@ -118,6 +118,10 @@ bool Game::ValidateMove(Move &move)
     if (piece->IsFirstMove())
         piece->MarkAsMoved();
     lastMove = move;
+    if (board.HasCapturedPiece() || piece->GetType() == Piece::Type::Pawn)
+        halfMoveCounter = 0;
+    else
+        halfMoveCounter++;
     turn++;
     return true;
 }
@@ -126,6 +130,8 @@ Game::Status Game::GameState()
 {
     if (board.InsufficientMaterial())
         return Status::InsufficientMaterial;
+    if (halfMoveCounter >= 100)
+        return Status::FiftyMoveRule;
     Piece::Color opponent_color = GetOpponentColor();
     if (board.IsSquareAttacked(board.GetKingRow(GetTurnColor()), board.GetKingCol(GetTurnColor()), opponent_color, lastMove))
     {

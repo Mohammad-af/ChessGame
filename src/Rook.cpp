@@ -3,12 +3,7 @@
 
 Rook::Rook(Color color) : Piece(color) {}
 
-bool Rook::IsValidMove(const Move &move) const
-{
-    if (move.GetFromRow() - move.GetToRow() == 0 || move.GetFromCol() - move.GetToCol() == 0)
-        return true;
-    return false;
-}
+bool Rook::IsValidMove(const Move &move) const { return move.GetFromRow() - move.GetToRow() == 0 || move.GetFromCol() - move.GetToCol() == 0; }
 
 bool Rook::AttacksSquare(const Move &move) const { return IsValidMove(move); }
 

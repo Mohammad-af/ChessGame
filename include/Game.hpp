@@ -16,13 +16,15 @@ public:
         Check,
         Checkmate,
         Stalemate,
-        InsufficientMaterial
+        InsufficientMaterial,
+        FiftyMoveRule
     };
 
 private:
     Board board;
     static int turn;
     std::optional<Move> lastMove = std::nullopt;
+    int halfMoveCounter  = 0;
 
 public:
     Move UserInput() const;
