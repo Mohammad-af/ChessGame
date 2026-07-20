@@ -2,7 +2,8 @@
 #define GAME_HPP
 
 #include <string>
-#include <optional> // For std::optional<Move> data type. It's added because you need to pass valuses for the Move constructor and in main.cpp we create Game data type without arguments.
+#include <optional>      // For std::optional<Move> data type. It's added because you need to pass valuses for the Move constructor and in main.cpp we create Game data type without arguments.
+#include <unordered_map> // For std::unordered_map<std::string, int> data type. It's like a organized vector.
 #include "Board.hpp"
 #include "Dispaly.hpp"
 #include "Move.hpp"
@@ -16,6 +17,7 @@ public:
         Check,
         Checkmate,
         Stalemate,
+        ThreefoldRepetition,
         InsufficientMaterial,
         FiftyMoveRule
     };
@@ -24,16 +26,17 @@ private:
     Board board;
     static int turn;
     std::optional<Move> lastMove = std::nullopt;
-    int halfMoveCounter  = 0;
+    int halfMoveCounter;                              // This is for fifty rule move.
+    std::unordered_map<std::string, int> positionHistory; // Key: std::string  Value: int
 
 public:
+    Game();
     Move UserInput() const;
     bool ValidateMove(Move &);
     Status GameState();
     Piece::Color GetTurnColor() const;
     Piece::Color GetOpponentColor() const;
     std::string GetColorName(Piece::Color) const;
-    void Setup();
     void Draw() const;
 };
 

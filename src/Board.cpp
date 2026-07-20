@@ -181,6 +181,78 @@ void Board::SetPromotedPawn(std::unique_ptr<Piece> &&pawn) { promotedPawn = std:
 
 std::unique_ptr<Piece> Board::ReleasePromotedPawn() { return std::move(promotedPawn); }
 
+std::string Board::GetPositionString(Piece::Color turn_color, const std::optional<Move> &last_move) const
+{
+    std::string position;
+    for (int row = 0; row < 8; row++)
+    {
+        for (int col = 0; col < 8; col++)
+        {
+            Piece *piece = grid[row][col].get();
+            if (grid[row][col] == nullptr)
+                position += "_";
+            else if (piece->GetType() == Piece::Type::Pawn)
+                position += (piece->GetColor() == Piece::Color::White) ? 'P' : 'p';
+            else if (piece->GetType() == Piece::Type::Rook)
+                position += (piece->GetColor() == Piece::Color::White) ? 'R' : 'r';
+            else if (piece->GetType() == Piece::Type::Knight)
+                position += (piece->GetColor() == Piece::Color::White) ? 'N' : 'n';
+            else if (piece->GetType() == Piece::Type::Bishop)
+                position += (piece->GetColor() == Piece::Color::White) ? 'B' : 'b';
+            else if (piece->GetType() == Piece::Type::Queen)
+                position += (piece->GetColor() == Piece::Color::White) ? 'Q' : 'q';
+            else
+                position += (piece->GetColor() == Piece::Color::White) ? 'K' : 'k';
+        }
+    }
+    position += (turn_color == Piece::Color::White) ? "|w|" : "|b|";
+    AddCastlingRights(position, Piece::Color::White, last_move);
+    AddCastlingRights(position, Piece::Color::Black, last_move);
+    position += '|';
+    if (last_move.has_value())
+    {
+        Piece *pawn = GetPiece(last_move->GetToRow(), last_move->GetToCol());
+        if (pawn->GetType() == Piece::Type::Pawn && std::abs(last_move->GetFromRow() - last_move->GetToRow()) == 2)
+        {
+            char row = '1' + (7 - (last_move->GetFromRow() + last_move->GetToRow()) / 2);
+            char col = (last_move->GetFromCol()) + 'a';
+            position += col;
+            position += row;
+        }
+    }
+    return position;
+}
+
+void Board::AddCastlingRights(std::string &position, Piece::Color color, const std::optional<Move> &last_move) const
+{
+    const int white_side_rook_row = 7, black_side_rook_row = 0, queen_side_rook_col = 0, king_side_rook_col = 7;
+    const int king_side_to_col = 6, king_side_middle_col = 5, queen_side_to_col = 2, queen_side_middle_col = 3, queen_side_rook_path_col = 1;
+    Piece *king = (color == Piece::Color::White) ? GetPiece(whiteKingRow, whiteKingCol) : GetPiece(blackKingRow, blackKingCol);
+    Piece::Color opponent_color = (color == Piece::Color::White) ? Piece::Color::Black : Piece::Color::White;
+    if (king->IsFirstMove())
+    {
+        Piece *king_side_rook = (color == Piece::Color::White) ? GetPiece(white_side_rook_row, king_side_rook_col) : GetPiece(black_side_rook_row, king_side_rook_col);
+        Piece *queen_side_rook = (color == Piece::Color::White) ? GetPiece(white_side_rook_row, queen_side_rook_col) : GetPiece(black_side_rook_row, queen_side_rook_col);
+        if (king_side_rook != nullptr && king_side_rook->GetType() == Piece::Type::Rook)
+        {
+            if (king_side_rook->IsFirstMove() && !IsSquareAttacked(GetKingRow(color), GetKingCol(color), opponent_color, last_move) && !IsSquareAttacked(GetKingRow(color), king_side_middle_col, opponent_color, last_move) && !IsSquareAttacked(GetKingRow(color), king_side_to_col, opponent_color, last_move))
+            {
+                Move move(GetKingRow(color), GetKingCol(color), GetKingRow(color), 6);
+                if (IsPathClear(move, king, last_move) && color == Piece::Color::White)
+                    position += (color == Piece::Color::White) ? 'K' : 'k';
+            }
+        }
+        if (queen_side_rook != nullptr && queen_side_rook->GetType() == Piece::Type::Rook)
+        {
+            if (queen_side_rook->IsFirstMove() && IsEmpty(GetKingRow(color), queen_side_rook_path_col) && !IsSquareAttacked(GetKingRow(color), GetKingCol(color), Piece::Color::White, last_move) && !IsSquareAttacked(GetKingRow(color), queen_side_middle_col, opponent_color, last_move) && !IsSquareAttacked(GetKingRow(color), queen_side_to_col, opponent_color, last_move))
+            {
+                Move move(GetKingRow(color), GetKingCol(color), GetKingRow(color), queen_side_to_col);
+                if (IsPathClear(move, king, last_move) && color == Piece::Color::White)
+                    position += (color == Piece::Color::White) ? 'Q' : 'q';
+            }
+        }
+    }
+}
 bool Board::IsPathClear(const Move &move, Piece *piece, const std::optional<Move> &last_move) const
 {
     Piece *end_move = GetPiece(move.GetToRow(), move.GetToCol());
@@ -234,6 +306,7 @@ bool Board::DetectCastling(Move &move, const std::optional<Move> &last_move)
     if (rook == nullptr || rook->GetType() != Piece::Type::Rook)
         return false;
     Piece::Color opponent_color = (piece->GetColor() == Piece::Color::White) ? Piece::Color::Black : Piece::Color::White;
+    const int queen_side_rook_path_col = 1;
     if (move.GetToCol() == 6)
     {
         if (rook->IsFirstMove() && !IsSquareAttacked(move.GetFromRow(), move.GetFromCol(), opponent_color, last_move) && !IsSquareAttacked(move.GetFromRow(), 5, opponent_color, last_move) && !IsSquareAttacked(move.GetFromRow(), 6, opponent_color, last_move))
@@ -244,7 +317,7 @@ bool Board::DetectCastling(Move &move, const std::optional<Move> &last_move)
     }
     else
     {
-        if (rook->IsFirstMove() && IsEmpty(rook_row, 1) && !IsSquareAttacked(move.GetFromRow(), move.GetFromCol(), opponent_color, last_move) && !IsSquareAttacked(move.GetFromRow(), 3, opponent_color, last_move) && !IsSquareAttacked(move.GetFromRow(), 2, opponent_color, last_move))
+        if (rook->IsFirstMove() && IsEmpty(rook_row, queen_side_rook_path_col) && !IsSquareAttacked(move.GetFromRow(), move.GetFromCol(), opponent_color, last_move) && !IsSquareAttacked(move.GetFromRow(), 3, opponent_color, last_move) && !IsSquareAttacked(move.GetFromRow(), 2, opponent_color, last_move))
         {
             move.SetMoveType(Move::Type::CastleQueenSide);
             return true;

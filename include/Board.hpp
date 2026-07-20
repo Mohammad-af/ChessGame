@@ -37,6 +37,8 @@ public:
     bool HasCapturedPiece() const;
     void SetPromotedPawn(std::unique_ptr<Piece> &&);
     std::unique_ptr<Piece> ReleasePromotedPawn();
+    std::string GetPositionString(Piece::Color, const std::optional<Move> &) const;
+    void AddCastlingRights(std::string &, Piece::Color, const std::optional<Move> &) const;
     bool IsPathClear(const Move &, Piece *, const std::optional<Move> &) const;
     bool IsSquareAttacked(int, int, Piece::Color, const std::optional<Move> &) const;
     bool DetectCastling(Move &, const std::optional<Move> &);

@@ -5,6 +5,13 @@
 
 int Game::turn = 1;
 
+Game::Game()
+{
+    board.Setup();
+    halfMoveCounter = 0;
+    positionHistory[board.GetPositionString(GetTurnColor(), lastMove)] = 1;
+}
+
 Move Game::UserInput() const
 {
     std::string user_move;
@@ -128,6 +135,10 @@ bool Game::ValidateMove(Move &move)
 
 Game::Status Game::GameState()
 {
+    std::string position = board.GetPositionString(GetTurnColor(), lastMove);
+    positionHistory[position]++;
+    if (positionHistory[position] >= 3)
+        return Status::ThreefoldRepetition;
     if (board.InsufficientMaterial())
         return Status::InsufficientMaterial;
     if (halfMoveCounter >= 100)
@@ -172,5 +183,4 @@ std::string Game::GetColorName(Piece::Color color) const
     return "Black";
 }
 
-void Game::Setup() { board.Setup(); }
 void Game::Draw() const { Display::Draw(Game::board); }
