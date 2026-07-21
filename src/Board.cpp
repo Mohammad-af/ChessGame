@@ -1,5 +1,6 @@
 #include "Board.hpp"
 #include <cmath>
+#include <cassert> // For assert(). If the statement inside of () is false then it will stop the game. Used when there is an invalid position like no king in the game.
 
 void Board::Setup()
 {
@@ -221,6 +222,120 @@ std::string Board::GetPositionString(Piece::Color turn_color, const std::optiona
         }
     }
     return position;
+}
+
+void Board::LoadPositionString(const std::string &position)
+{
+    const int castling_rights_start = 67;
+    assert(position.size() > castling_rights_start);
+    for (int i = 0; i < 64; i++)
+    {
+        int row = i / 8;
+        int col = i % 8;
+        if (position[i] == '_')
+            grid[row][col] = nullptr;
+        else
+        {
+            switch (position[i])
+            {
+            case 'P':
+                grid[row][col] = std::make_unique<Pawn>(Piece::Color::White);
+                break;
+            case 'p':
+                grid[row][col] = std::make_unique<Pawn>(Piece::Color::Black);
+                break;
+            case 'R':
+                grid[row][col] = std::make_unique<Rook>(Piece::Color::White);
+                break;
+            case 'r':
+                grid[row][col] = std::make_unique<Rook>(Piece::Color::Black);
+                break;
+            case 'N':
+                grid[row][col] = std::make_unique<Knight>(Piece::Color::White);
+                break;
+            case 'n':
+                grid[row][col] = std::make_unique<Knight>(Piece::Color::Black);
+                break;
+            case 'B':
+                grid[row][col] = std::make_unique<Bishop>(Piece::Color::White);
+                break;
+            case 'b':
+                grid[row][col] = std::make_unique<Bishop>(Piece::Color::Black);
+                break;
+            case 'Q':
+                grid[row][col] = std::make_unique<Queen>(Piece::Color::White);
+                break;
+            case 'q':
+                grid[row][col] = std::make_unique<Queen>(Piece::Color::Black);
+                break;
+            case 'K':
+                grid[row][col] = std::make_unique<King>(Piece::Color::White);
+                whiteKingRow = row;
+                whiteKingCol = col;
+                break;
+            case 'k':
+                grid[row][col] = std::make_unique<King>(Piece::Color::Black);
+                blackKingRow = row;
+                blackKingCol = col;
+                break;
+            }
+        }
+        if ((position[i] == 'P' && row != 6) || (position[i] == 'p' && row != 1))
+        {
+            Piece *piece = GetPiece(row, col);
+            piece->MarkAsMoved();
+        }
+    }
+    Piece *white_king = GetPiece(whiteKingRow, whiteKingCol);
+    Piece *black_king = GetPiece(blackKingRow, blackKingCol);
+    assert(white_king != nullptr);
+    assert(white_king->GetType() == Piece::Type::King);
+    assert(black_king != nullptr);
+    assert(black_king->GetType() == Piece::Type::King);
+    bool white_king_side_castle = false;
+    bool white_queen_side_castle = false;
+    bool black_king_side_castle = false;
+    bool black_queen_side_castle = false;
+    int index = castling_rights_start;
+    while (position[index] != '|')
+    {
+        switch (position[index])
+        {
+        case 'K':
+            white_king_side_castle = true;
+            break;
+
+        case 'Q':
+            white_queen_side_castle = true;
+            break;
+
+        case 'k':
+            black_king_side_castle = true;
+            break;
+
+        case 'q':
+            black_queen_side_castle = true;
+            break;
+        }
+        index++;
+    }
+    if (white_king != nullptr && !white_king_side_castle && !white_queen_side_castle)
+        white_king->MarkAsMoved();
+    if (white_king != nullptr && !black_king_side_castle && !black_queen_side_castle)
+        black_king->MarkAsMoved();
+    const int white_side_rook_row = 7, black_side_rook_row = 0, queen_side_rook_col = 0, king_side_rook_col = 7;
+    Piece *rook = GetPiece(white_side_rook_row, king_side_rook_col);
+    if (rook != nullptr && rook->GetType() == Piece::Type::Rook && !white_king_side_castle)
+        rook->MarkAsMoved();
+    rook = GetPiece(white_side_rook_row, queen_side_rook_col);
+    if (rook != nullptr && rook->GetType() == Piece::Type::Rook && !white_queen_side_castle)
+        rook->MarkAsMoved();
+    rook = GetPiece(black_side_rook_row, king_side_rook_col);
+    if (rook != nullptr && rook->GetType() == Piece::Type::Rook && !black_king_side_castle)
+        rook->MarkAsMoved();
+    rook = GetPiece(black_side_rook_row, queen_side_rook_col);
+    if (rook != nullptr && rook->GetType() == Piece::Type::Rook && !black_queen_side_castle)
+        rook->MarkAsMoved();
 }
 
 void Board::AddCastlingRights(std::string &position, Piece::Color color) const

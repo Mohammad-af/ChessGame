@@ -37,6 +37,8 @@ public:
     Piece::Color GetTurnColor() const;
     Piece::Color GetOpponentColor() const;
     std::string GetColorName(Piece::Color) const;
+    void SaveGame(const std::string &) const;
+    void LoadGame(const std::string &);
     void Draw() const;
 };
 

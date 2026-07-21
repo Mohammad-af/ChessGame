@@ -1,5 +1,8 @@
 #include <iostream>
 #include <string>
+#include <fstream>
+#include <filesystem> // For deleting previous games.
+#include <limits>     // For cin.ignore().
 #include "include/Dispaly.hpp"
 #include "include/Game.hpp"
 #include "include/Console.hpp"
@@ -9,6 +12,31 @@ int main()
     SetupConsole();
     bool run_game = true;
     Game game;
+    int option;
+    std::ifstream file("save.txt");
+    if (file)
+    {
+        while (true)
+        {
+            std::cout << "Choose an option(Enter 1 or 2 or 3):\n 1. Load Last Game\n 2. New Game\n 3. Exit\n";
+            if (std::cin >> option && option >= 1 && option <= 3) // "std::cin >> option" Reads the input and checks whether it is a valid integer.
+                break;
+            std::cout << "Invalid option.\n";
+            std::cin.clear();                                                   // Clears the error if user used an invalid input like 'a'.
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Clears the buffer.
+        }
+        switch (option)
+        {
+        case 1:
+            game.LoadGame("save.txt");
+            break;
+        case 2:
+            break;
+        case 3:
+            run_game = false;
+            break;
+        }
+    }
     while (run_game)
     {
         ClearConsole();

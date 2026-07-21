@@ -2,6 +2,7 @@
 #include <iostream>
 #include <cctype> // For character functions like std::tolower(int).
 #include <cmath>
+#include <fstream>
 
 int Game::turn = 1;
 
@@ -130,6 +131,7 @@ bool Game::ValidateMove(Move &move)
     else
         halfMoveCounter++;
     turn++;
+    SaveGame("save.txt");
     return true;
 }
 
@@ -181,6 +183,47 @@ std::string Game::GetColorName(Piece::Color color) const
     if (color == Piece::Color::White)
         return "White";
     return "Black";
+}
+
+void Game::SaveGame(const std::string &filename) const
+{
+    std::ofstream file(filename);
+    if (!file)
+    {
+        std::cerr << "File could not be opened.\n";
+        return;
+    }
+    file << board.GetPositionString(GetTurnColor(), lastMove) << std::endl;
+    file << "|" << halfMoveCounter << std::endl;
+    file << (lastMove.has_value() ? 1 : 0) << std::endl;
+    if (lastMove.has_value())
+        file << lastMove->GetFromRow() << ' ' << lastMove->GetFromCol() << ' ' << lastMove->GetToRow() << ' ' << lastMove->GetToCol() << '\n';
+    file << turn << std::endl;
+}
+
+void Game::LoadGame(const std::string &filename)
+{
+    std::ifstream file(filename);
+    if (!file)
+    {
+        std::cerr << "File could not be opened.\n";
+        return;
+    }
+    std::string position;
+    file >> position;
+    board.LoadPositionString(position);
+    file >> halfMoveCounter;
+    bool hasLastMove;
+    file >> hasLastMove;
+    if (hasLastMove)
+    {
+        int fromRow, fromCol, toRow, toCol;
+        file >> fromRow >> fromCol >> toRow >> toCol;
+        lastMove = Move(fromRow, fromCol, toRow, toCol);
+    }
+    else
+        lastMove.reset();
+    file >> turn;
 }
 
 void Game::Draw() const { Display::Draw(Game::board); }

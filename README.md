@@ -57,9 +57,6 @@ Implemented features:
 - Pawn promotion
 - Fifty move rule
 - Threefold repetition
-
-## Future Plans
-
 - Save and load game
 
 ## License
