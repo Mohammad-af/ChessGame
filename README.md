@@ -55,6 +55,8 @@ Implemented features:
 - En passant
 - Castling
 - Pawn promotion
+- Fifty move rule
+- Threefold repetition
 
 ## Future Plans
 

@@ -206,8 +206,8 @@ std::string Board::GetPositionString(Piece::Color turn_color, const std::optiona
         }
     }
     position += (turn_color == Piece::Color::White) ? "|w|" : "|b|";
-    AddCastlingRights(position, Piece::Color::White, last_move);
-    AddCastlingRights(position, Piece::Color::Black, last_move);
+    AddCastlingRights(position, Piece::Color::White);
+    AddCastlingRights(position, Piece::Color::Black);
     position += '|';
     if (last_move.has_value())
     {
@@ -223,34 +223,18 @@ std::string Board::GetPositionString(Piece::Color turn_color, const std::optiona
     return position;
 }
 
-void Board::AddCastlingRights(std::string &position, Piece::Color color, const std::optional<Move> &last_move) const
+void Board::AddCastlingRights(std::string &position, Piece::Color color) const
 {
     const int white_side_rook_row = 7, black_side_rook_row = 0, queen_side_rook_col = 0, king_side_rook_col = 7;
-    const int king_side_to_col = 6, king_side_middle_col = 5, queen_side_to_col = 2, queen_side_middle_col = 3, queen_side_rook_path_col = 1;
     Piece *king = (color == Piece::Color::White) ? GetPiece(whiteKingRow, whiteKingCol) : GetPiece(blackKingRow, blackKingCol);
-    Piece::Color opponent_color = (color == Piece::Color::White) ? Piece::Color::Black : Piece::Color::White;
     if (king->IsFirstMove())
     {
         Piece *king_side_rook = (color == Piece::Color::White) ? GetPiece(white_side_rook_row, king_side_rook_col) : GetPiece(black_side_rook_row, king_side_rook_col);
         Piece *queen_side_rook = (color == Piece::Color::White) ? GetPiece(white_side_rook_row, queen_side_rook_col) : GetPiece(black_side_rook_row, queen_side_rook_col);
-        if (king_side_rook != nullptr && king_side_rook->GetType() == Piece::Type::Rook)
-        {
-            if (king_side_rook->IsFirstMove() && !IsSquareAttacked(GetKingRow(color), GetKingCol(color), opponent_color, last_move) && !IsSquareAttacked(GetKingRow(color), king_side_middle_col, opponent_color, last_move) && !IsSquareAttacked(GetKingRow(color), king_side_to_col, opponent_color, last_move))
-            {
-                Move move(GetKingRow(color), GetKingCol(color), GetKingRow(color), 6);
-                if (IsPathClear(move, king, last_move) && color == Piece::Color::White)
-                    position += (color == Piece::Color::White) ? 'K' : 'k';
-            }
-        }
-        if (queen_side_rook != nullptr && queen_side_rook->GetType() == Piece::Type::Rook)
-        {
-            if (queen_side_rook->IsFirstMove() && IsEmpty(GetKingRow(color), queen_side_rook_path_col) && !IsSquareAttacked(GetKingRow(color), GetKingCol(color), Piece::Color::White, last_move) && !IsSquareAttacked(GetKingRow(color), queen_side_middle_col, opponent_color, last_move) && !IsSquareAttacked(GetKingRow(color), queen_side_to_col, opponent_color, last_move))
-            {
-                Move move(GetKingRow(color), GetKingCol(color), GetKingRow(color), queen_side_to_col);
-                if (IsPathClear(move, king, last_move) && color == Piece::Color::White)
-                    position += (color == Piece::Color::White) ? 'Q' : 'q';
-            }
-        }
+        if (king_side_rook != nullptr && king_side_rook->GetType() == Piece::Type::Rook && king_side_rook->IsFirstMove())
+            position += (color == Piece::Color::White) ? 'K' : 'k';
+        if (queen_side_rook != nullptr && queen_side_rook->GetType() == Piece::Type::Rook && queen_side_rook->IsFirstMove())
+            position += (color == Piece::Color::White) ? 'Q' : 'q';
     }
 }
 bool Board::IsPathClear(const Move &move, Piece *piece, const std::optional<Move> &last_move) const

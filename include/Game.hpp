@@ -26,7 +26,7 @@ private:
     Board board;
     static int turn;
     std::optional<Move> lastMove = std::nullopt;
-    int halfMoveCounter;                              // This is for fifty rule move.
+    int halfMoveCounter;                                  // This is for fifty rule move.
     std::unordered_map<std::string, int> positionHistory; // Key: std::string  Value: int
 
 public:
