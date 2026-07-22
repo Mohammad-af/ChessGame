@@ -199,12 +199,18 @@ void Game::SaveGame(const std::string &filename) const
         std::cerr << "File could not be opened.\n";
         return;
     }
-    file << board.GetPositionString(GetTurnColor(), lastMove) << std::endl;
-    file << halfMoveCounter << std::endl;
-    file << (lastMove.has_value() ? 1 : 0) << std::endl;
+    file << board.GetPositionString(GetTurnColor(), lastMove) << '\n';
+    file << halfMoveCounter << '\n';
+    file << (lastMove.has_value() ? 1 : 0) << '\n';
     if (lastMove.has_value())
         file << lastMove->GetFromRow() << ' ' << lastMove->GetFromCol() << ' ' << lastMove->GetToRow() << ' ' << lastMove->GetToCol() << '\n';
-    file << turn << std::endl;
+    file << turn << '\n';
+    const size_t history_size = positionHistory.size();
+    file << history_size << '\n';
+    for (const auto &entry : positionHistory)
+    {
+        file << entry.first << ' ' << entry.second << '\n';
+    }
 }
 
 void Game::LoadGame(const std::string &filename)
@@ -212,7 +218,7 @@ void Game::LoadGame(const std::string &filename)
     std::ifstream file(filename);
     if (!file)
     {
-        std::cerr << "File could not be opened.\n";
+        std::cerr << "Save file is corrupted.\n";
         return;
     }
     std::string position;
@@ -230,6 +236,16 @@ void Game::LoadGame(const std::string &filename)
     else
         lastMove.reset();
     file >> turn;
+    size_t history_size;
+    file >> history_size;
+    positionHistory.clear();
+    for (size_t i = 0; i < history_size; i++)
+    {
+        std::string history_position;
+        int count;
+        file >> history_position >> count;
+        positionHistory[history_position] = count;
+    }
 }
 
 void Game::Draw() const { Display::Draw(Game::board); }
