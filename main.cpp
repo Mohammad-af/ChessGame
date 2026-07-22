@@ -38,6 +38,7 @@ int main()
             break;
         }
     }
+    file.close();
     while (run_game)
     {
         ClearConsole();
@@ -62,22 +63,27 @@ int main()
             case Game::Status::Checkmate:
                 std::cout << "IT'S CHECKMATE! " << game.GetColorName(game.GetOpponentColor()) << " WON.\n\n";
                 run_game = false;
+                game.DeleteSaveFile();
                 break;
             case Game::Status::Stalemate:
                 std::cout << "IT'S A DRAW! It's stalemate!\n\n";
                 run_game = false;
+                game.DeleteSaveFile();
                 break;
             case Game::Status::ThreefoldRepetition:
                 std::cout << "IT'S A DRAW! The same position has occurred three times.\n\n";
                 run_game = false;
+                game.DeleteSaveFile();
                 break;
             case Game::Status::InsufficientMaterial:
                 std::cout << "IT'S A DRAW! There is insufficient material to checkmate.\n\n";
                 run_game = false;
+                game.DeleteSaveFile();
                 break;
             case Game::Status::FiftyMoveRule:
                 std::cout << "IT'S A DRAW! Fifty consecutive moves were made without a pawn move or capture.\n\n";
                 run_game = false;
+                game.DeleteSaveFile();
                 break;
             }
         }

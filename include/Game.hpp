@@ -39,6 +39,7 @@ public:
     std::string GetColorName(Piece::Color) const;
     void SaveGame(const std::string &) const;
     void LoadGame(const std::string &);
+    void DeleteSaveFile() const;
     void Draw() const;
 };
 

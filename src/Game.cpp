@@ -3,6 +3,7 @@
 #include <cctype> // For character functions like std::tolower(int).
 #include <cmath>
 #include <fstream>
+#include <cstdio> // For remove() to remove save file.
 
 int Game::turn = 1;
 
@@ -211,6 +212,7 @@ void Game::SaveGame(const std::string &filename) const
     {
         file << entry.first << ' ' << entry.second << '\n';
     }
+    file.close();
 }
 
 void Game::LoadGame(const std::string &filename)
@@ -246,6 +248,9 @@ void Game::LoadGame(const std::string &filename)
         file >> history_position >> count;
         positionHistory[history_position] = count;
     }
+    file.close();
 }
+
+void Game::DeleteSaveFile() const { std::remove("save.txt"); }
 
 void Game::Draw() const { Display::Draw(Game::board); }
