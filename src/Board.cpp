@@ -1,6 +1,5 @@
 #include "Board.hpp"
 #include <cmath>
-#include <cassert> // For assert(). If the statement inside of () is false then it will stop the game. Used when there is an invalid position like no king in the game.
 
 void Board::Setup()
 {
@@ -227,7 +226,6 @@ std::string Board::GetPositionString(Piece::Color turn_color, const std::optiona
 void Board::LoadPositionString(const std::string &position)
 {
     const int castling_rights_start = 67;
-    assert(position.size() > castling_rights_start);
     for (int i = 0; i < 64; i++)
     {
         int row = i / 8;
@@ -281,17 +279,10 @@ void Board::LoadPositionString(const std::string &position)
             }
         }
         if ((position[i] == 'P' && row != 6) || (position[i] == 'p' && row != 1))
-        {
-            Piece *piece = GetPiece(row, col);
-            piece->MarkAsMoved();
-        }
+            GetPiece(row, col)->MarkAsMoved();
     }
     Piece *white_king = GetPiece(whiteKingRow, whiteKingCol);
     Piece *black_king = GetPiece(blackKingRow, blackKingCol);
-    assert(white_king != nullptr);
-    assert(white_king->GetType() == Piece::Type::King);
-    assert(black_king != nullptr);
-    assert(black_king->GetType() == Piece::Type::King);
     bool white_king_side_castle = false;
     bool white_queen_side_castle = false;
     bool black_king_side_castle = false;
