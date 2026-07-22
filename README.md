@@ -2,6 +2,8 @@
 
 A console-based chess game developed in modern C++ with a focus on object-oriented design and clean architecture.
 
+**GitHub Repository:** https://github.com/Mohammad-af/ChessGame
+
 ## Features
 
 - ✅ Complete chess move validation
@@ -16,6 +18,12 @@ A console-based chess game developed in modern C++ with a focus on object-orient
 - ♖ Unicode chess pieces
 - 🖥️ Cross-platform console support
 - 🧩 Object-oriented design
+
+## Development Tools
+
+- Git for version control
+- GitHub for source code hosting and project management
+- CMake for cross-platform build configuration
 
 ## Requirements
 
