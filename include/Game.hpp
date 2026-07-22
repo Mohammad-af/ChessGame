@@ -31,7 +31,7 @@ private:
 
 public:
     Game();
-    Move UserInput() const;
+    bool UserInput(Move &);
     bool ValidateMove(Move &);
     Status GameState();
     Piece::Color GetTurnColor() const;

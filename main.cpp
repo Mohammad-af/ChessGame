@@ -18,6 +18,7 @@ int main()
     {
         while (true)
         {
+            ClearConsole();
             std::cout << "Choose an option(Enter 1 or 2 or 3):\n 1. Load Last Game\n 2. New Game\n 3. Exit\n";
             if (std::cin >> option && option >= 1 && option <= 3) // "std::cin >> option" Reads the input and checks whether it is a valid integer.
                 break;
@@ -41,7 +42,12 @@ int main()
     {
         ClearConsole();
         game.Draw();
-        Move move = game.UserInput();
+        Move move(0, 0, 0, 0);
+        if (!game.UserInput(move))
+        {
+            run_game = false;
+            break;
+        }
         if (game.ValidateMove(move))
         {
             ClearConsole();

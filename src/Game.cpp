@@ -13,13 +13,18 @@ Game::Game()
     positionHistory[board.GetPositionString(GetTurnColor(), lastMove)] = 1;
 }
 
-Move Game::UserInput() const
+bool Game::UserInput(Move &move)
 {
     std::string user_move;
     while (true)
     {
-        std::cout << GetColorName(GetTurnColor()) << " move: ";
+        std::cout << GetColorName(GetTurnColor()) << " move(Enter 0 to exit): ";
         std::cin >> user_move;
+        if (user_move == "0")
+        {
+            SaveGame("save.txt");
+            return false;
+        }
         if (user_move.length() != 4)
         {
             std::cout << "\nINVALID INPUT FORMAT! Use this format: a2a3\n\n";
@@ -39,7 +44,8 @@ Move Game::UserInput() const
     to_col = user_move[2] - 'a';
     from_row = 7 - (user_move[1] - '1'); // example: user_move[1] = '2' = 50(ASCII); row1 = 7 - (50 - 49) = 6; Grid[row1][] is the second row from bottom.
     to_row = 7 - (user_move[3] - '1');
-    return Move(from_row, from_col, to_row, to_col);
+    move = Move(from_row, from_col, to_row, to_col);
+    return true;
 }
 
 bool Game::ValidateMove(Move &move)
@@ -194,7 +200,7 @@ void Game::SaveGame(const std::string &filename) const
         return;
     }
     file << board.GetPositionString(GetTurnColor(), lastMove) << std::endl;
-    file << "|" << halfMoveCounter << std::endl;
+    file << halfMoveCounter << std::endl;
     file << (lastMove.has_value() ? 1 : 0) << std::endl;
     if (lastMove.has_value())
         file << lastMove->GetFromRow() << ' ' << lastMove->GetFromCol() << ' ' << lastMove->GetToRow() << ' ' << lastMove->GetToCol() << '\n';
