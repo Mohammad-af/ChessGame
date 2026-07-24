@@ -343,6 +343,7 @@ void Board::AddCastlingRights(std::string &position, Piece::Color color) const
             position += (color == Piece::Color::White) ? 'Q' : 'q';
     }
 }
+
 bool Board::IsPathClear(const Move &move, Piece *piece, const std::optional<Move> &last_move) const
 {
     Piece *end_move = GetPiece(move.GetToRow(), move.GetToCol());

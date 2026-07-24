@@ -3,7 +3,7 @@
 
 #include <memory> // For data type std::unique_ptr<Piece>.
 #include <string>
-#include <optional>
+#include <optional> // For std::optional<Move>
 #include "Piece.hpp"
 #include "Pawn.hpp"
 #include "Rook.hpp"
